@@ -3,6 +3,7 @@ import SignUpForm from "../components/SignUpForm";
 import { signupRequest } from "../api/authService";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { handleApiError } from "../utils/handleApiError";
 
 const SignupPage = () => {
   const [apiError, setApiError] = useState(null);
@@ -16,7 +17,7 @@ const SignupPage = () => {
       login({ user: data });
       navigate("/login");
     } catch (err) {
-      setApiError(err.message);
+      setApiError(handleApiError(err));
     }
   };
 

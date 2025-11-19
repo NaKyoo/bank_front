@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { loginRequest } from "../api/authService";
 import LoginForm from "../components/LoginForm";
+import { handleApiError } from "../utils/handleApiError";
 
 const LoginPage = () => {
   const [apiError, setApiError] = useState(null);
@@ -24,7 +25,7 @@ const LoginPage = () => {
       login({ user, token: data.access_token });
       navigate("/dashboard");
     } catch (err) {
-      setApiError(err.message);
+      setApiError(handleApiError(err));
     }
   };
 
