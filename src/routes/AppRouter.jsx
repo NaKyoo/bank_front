@@ -1,26 +1,47 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import SignupPage from "../pages/SignupPage";
 import { AuthProvider } from "../context/AuthContext";
+
+import SignupPage from "../pages/SignupPage";
 import LoginPage from "../pages/LoginPage";
+import Dashboard from "../pages/DashBoardPage";
+
+import PrivateRoute from "./PrivateRoute";
+import PublicRoute from "./PublicRoute";
 
 const AppRouter = () => (
   <BrowserRouter>
     <AuthProvider>
       <Routes>
-        <Route path="/" element={<SignupPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        {/* <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
-            }
-          /> */}
+        {/* Pages publiques */}
+        <Route
+          path="/signup"
+          element={
+            <PublicRoute>
+              <SignupPage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/"
+          element={
+            <PublicRoute>
+              <LoginPage />
+            </PublicRoute>
+          }
+        />
+
+        {/* Pages privées */}
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </AuthProvider>
   </BrowserRouter>
 );
-
 
 export default AppRouter;

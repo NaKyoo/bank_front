@@ -86,7 +86,7 @@ const SignUpForm = ({ onSubmit, apiError }) => {
 
         <div className="text-center mt-6">
           <a
-            href="/login"
+            href="/"
             style={{ color: "var(--primary-light)", textDecoration: "underline" }}
           >
             Déjà un compte ? Se connecter

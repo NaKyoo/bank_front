@@ -3,18 +3,18 @@ import { Navigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useAuth } from "../context/AuthContext";
 
-const PrivateRoute = ({ children }) => {
+const PublicRoute = ({ children }) => {
   const { user } = useAuth();
 
-  if (!user) {
-    return <Navigate to="/" replace />;
+  if (user) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return children;
 };
 
-PrivateRoute.propTypes = {
+PublicRoute.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-export default React.memo(PrivateRoute);
+export default React.memo(PublicRoute);

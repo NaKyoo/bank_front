@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import SignUpForm from "../components/SignUpForm";
 import { signupRequest } from "../api/authService";
 import { useNavigate } from "react-router-dom";
@@ -14,7 +14,7 @@ const SignupPage = () => {
       setApiError(null);
       const data = await signupRequest(values);
       login({ user: data });
-      navigate("/login");
+      navigate("/");
     } catch (err) {
       setApiError(err.message);
     }
