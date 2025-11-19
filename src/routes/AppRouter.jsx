@@ -1,19 +1,42 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+
 import { AuthProvider } from "../context/AuthContext";
 
 import SignupPage from "../pages/SignupPage";
 import LoginPage from "../pages/LoginPage";
 import Dashboard from "../pages/DashboardPage";
+import ProfilePage from "../pages/ProfilePage";
 
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
+import Spinner from "../components/Spinner";
 
-// teste depot 
-import DepositPage from "../pages/DepositPage";
+const AppRouter = () => {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <RouterContent />
+      </AuthProvider>
+    </BrowserRouter>
+  );
+};
 
-const AppRouter = () => (
-  <BrowserRouter>
-    <AuthProvider>
+const RouterContent = () => {
+  const location = useLocation();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+
+    const timer = setTimeout(() => setLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
+
+  return (
+    <>
+      <Spinner show={loading} />
+
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
 
@@ -44,8 +67,16 @@ const AppRouter = () => (
             </PrivateRoute>
           }
         />
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <ProfilePage />
+            </PrivateRoute>
+          }
+        />
 
-        {/* Page de dépôt d'argent */}
+         {/* Page de dépôt d'argent */}
         <Route
           path="/deposit"
           element={
@@ -55,8 +86,8 @@ const AppRouter = () => (
         }
         /> 
       </Routes>
-    </AuthProvider>
-  </BrowserRouter>
-);
+    </>
+  );
+};
 
 export default AppRouter;
