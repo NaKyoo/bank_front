@@ -1,4 +1,3 @@
-// src/services/accountService.js
 import { getAuthToken } from "./authService";
 
 export const accountService = {

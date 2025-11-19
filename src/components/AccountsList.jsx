@@ -1,32 +1,34 @@
 import { parseDate } from "../utils/parseDate";
 
-const AccountsList = ({ accounts }) => {
+const AccountsList = ({ accounts, onViewDetails }) => {
   return (
-    <table className="w-full text-left border-collapse" style={{ borderColor: "var(--border)" }}>
+    <table className="w-full text-left border-collapse">
       <thead>
         <tr>
-          <th className="p-3" style={{ borderBottom: "1px solid var(--border)", color: "var(--primary)" }}>Numéro</th>
-          <th className="p-3" style={{ borderBottom: "1px solid var(--border)", color: "var(--primary)" }}>Solde (€)</th>
-          <th className="p-3" style={{ borderBottom: "1px solid var(--border)", color: "var(--primary)" }}>Type</th>
-          <th className="p-3" style={{ borderBottom: "1px solid var(--border)", color: "var(--primary)" }}>Date de création</th>
+          <th className="border-b p-2">Numéro</th>
+          <th className="border-b p-2">Solde (€)</th>
+          <th className="border-b p-2">Type</th>
+          <th className="border-b p-2">Création</th>
+          <th className="border-b p-2">Actions</th>
         </tr>
       </thead>
       <tbody>
         {accounts.map((acc) => {
           const type = acc.parent_account_number ? "Secondaire" : "Principal";
           return (
-            <tr
-              key={acc.account_number}
-              style={{
-                borderBottom: "1px solid var(--border)",
-                transition: "background-color 0.3s",
-              }}
-              className="hover:bg-surface-light"
-            >
-              <td className="p-3">{acc.account_number}</td>
-              <td className="p-3">{Number(acc.balance).toFixed(2)}</td>
-              <td className="p-3">{type}</td>
-              <td className="p-3">{parseDate(acc.created_at)}</td>
+            <tr key={acc.account_number} className="hover:bg-surface-light transition">
+              <td className="border-b p-2">{acc.account_number}</td>
+              <td className="border-b p-2">{Number(acc.balance).toFixed(2)}</td>
+              <td className="border-b p-2">{type}</td>
+              <td className="border-b p-2">{parseDate(acc.created_at)}</td>
+              <td className="border-b p-2">
+                <button
+                  className="px-3 py-1 rounded-md font-medium text-sm bg-primary text-text-inverse hover:brightness-110 transition"
+                  onClick={() => onViewDetails(acc)}
+                >
+                  Voir détails
+                </button>
+              </td>
             </tr>
           );
         })}
