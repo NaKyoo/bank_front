@@ -32,6 +32,29 @@ const SignUpForm = ({ onSubmit, apiError }) => {
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
 
           <div className="flex flex-col">
+            <label style={{ color: "var(--text-muted)", marginBottom: "var(--space-xs)" }}>Nom</label>
+
+            <input
+              name="name"
+              type="text"
+              value={values.name}
+              onChange={handleChange}
+              className="p-3 rounded-md"
+              style={{
+                backgroundColor: "var(--surface-light)",
+                color: "var(--text)",
+                border: `1px solid ${errors.name ? "var(--error)" : "var(--border)"}`
+              }}
+            />
+
+            {errors.name && (
+              <span style={{ color: "var(--error)", marginTop: 4 }}>
+                {errors.name}
+              </span>
+            )}
+          </div>
+
+          <div className="flex flex-col">
             <label style={{ color: "var(--text-muted)", marginBottom: "var(--space-xs)" }}>Email</label>
             <input
               name="email"

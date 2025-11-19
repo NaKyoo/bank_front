@@ -1,5 +1,10 @@
 
 export const validators = {
+  name(value) {
+    if (!value) return "Le nom est requis.";
+    if (value.trim().length < 2) return "Le nom est trop court.";
+    return null;
+  },
   email(value) {
     if (!value) return "L'email est requis.";
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

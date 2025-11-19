@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { validators } from "../utils/validators";
 
-export const useSignupForm = (initial = { email: "", password: "" }) => {
+export const useSignupForm = (initial = { name: "", email: "", password: "" }) => {
   const [values, setValues] = useState(initial);
   const [errors, setErrors] = useState({});
 

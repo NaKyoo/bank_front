@@ -34,3 +34,10 @@ export const getUserAccounts = async (token) => {
   if (!response.ok) throw new Error(data.message || data.detail || "Erreur lors de la récupération des comptes");
   return data;
 };
+
+// Backwards-compatible object export (some hooks/components import `accountService`)
+export const accountService = {
+  getMyAccounts: getUserAccounts,
+  getUserAccounts,
+  getUserInfo,
+};
