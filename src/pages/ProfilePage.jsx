@@ -4,28 +4,42 @@ import { useNavigate } from "react-router-dom";
 import { useAccounts } from "../hooks/useAccounts";
 import AccountsList from "../components/AccountsList";
 import Header from "../components/Header";
+
+import OpenAccountModal from "../components/modal/OpenAccountModal";
 import DetailsModal from "../components/modal/DetailsModal";
 import Modal from "../components/modal/Modal";
 
 const ProfilePage = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
-  const { accounts, loading, error } = useAccounts();
   const [selectedAccount, setSelectedAccount] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+
+  const {
+    accounts,
+    loading,
+    error,
+    openAccount,
+    refresh,
+    deleteAccount,
+  } = useAccounts();
+
+  const parentAccountNumber = selectedAccount?.account_number || accounts.find(acc => acc.parent_account_number === null)?.account_number;
 
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
 
-  const closeModal = () => setSelectedAccount(null);
+  const closeModal = () => {
+    setSelectedAccount(null);
+    setOpenModal(false);
+  };
 
   return (
     <div className="min-h-screen bg-background text-text">
-      {/* Header */}
       <Header pageTitle="Profil" onLogout={logout} />
 
-      {/* Contenu principal */}
       <div className="flex items-center justify-center p-6">
         <div
           className="w-full max-w-3xl p-8 rounded-lg shadow-lg"
@@ -35,18 +49,25 @@ const ProfilePage = () => {
             borderRadius: "var(--radius-lg)",
           }}
         >
-          {/* Section Mes comptes */}
-          <h2
-            className="text-xl font-bold mb-4"
-            style={{ color: "var(--primary)" }}
-          >
-            Mes comptes
-          </h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold" style={{ color: "var(--primary)" }}>
+              Mes comptes
+            </h2>
+            <button
+              onClick={() => setOpenModal(true)}
+              className="px-4 py-2 rounded-md bg-primary text-text-inverse font-semibold hover:brightness-110 transition"
+            >
+              Ouvrir un compte
+            </button>
+          </div>
 
           {loading && <p style={{ color: "var(--text)" }}>Chargement...</p>}
           {error && <p style={{ color: "var(--error)" }}>{error}</p>}
           {!loading && !error && accounts.length > 0 && (
-            <AccountsList accounts={accounts} onViewDetails={setSelectedAccount} />
+            <AccountsList accounts={accounts} onViewDetails={setSelectedAccount} onDelete={async (accNum) => {
+                await deleteAccount(accNum);
+                await refresh();
+            }} />
           )}
           {!loading && !error && accounts.length === 0 && (
             <p style={{ color: "var(--text)" }}>Aucun compte trouvé.</p>
@@ -65,8 +86,19 @@ const ProfilePage = () => {
           </button>
         </div>
 
+        {/* Modal Détails du compte */}
         <Modal isOpen={!!selectedAccount} onClose={closeModal}>
-          <DetailsModal account={selectedAccount}/>
+          <DetailsModal account={selectedAccount} onClose={closeModal} />
+        </Modal>
+
+        {/* Modal Ouvrir un compte secondaire */}
+        <Modal isOpen={openModal} onClose={closeModal}>
+           <OpenAccountModal
+              parentAccountNumber={parentAccountNumber}
+              onClose={closeModal}
+              openAccount={openAccount}
+              refresh={refresh}         
+            />
         </Modal>
       </div>
     </div>

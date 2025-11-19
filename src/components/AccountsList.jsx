@@ -1,26 +1,19 @@
 import { useState } from "react";
 import { parseDate } from "../utils/parseDate";
-import { useAccounts } from "../hooks/useAccounts";
 import TransactionsList from "./TransactionsList";
 
-const AccountsList = ({ onViewDetails }) => {
-  const { accounts, deleteAccount } = useAccounts();
+const AccountsList = ({ accounts, onViewDetails, onDelete }) => {
   const [openAccount, setOpenAccount] = useState(null);
 
   const toggleAccount = (accountNumber) => {
     setOpenAccount(openAccount === accountNumber ? null : accountNumber);
   };
 
-  const handleDelete = async (accountNumber) => {
-    if (!window.confirm(`Voulez-vous vraiment supprimer le compte ${accountNumber} ?`)) return;
-
-    const success = await deleteAccount(accountNumber);
-    if (success && openAccount === accountNumber) setOpenAccount(null);
-  };
-
   return (
     <div className="space-y-4">
-      {accounts.map((acc) => {
+      {accounts
+      .filter(acc => acc.is_active)
+      .map((acc) => {
         const type = acc.parent_account_number ? "Secondaire" : "Principal";
         const isOpen = openAccount === acc.account_number;
 
@@ -56,11 +49,18 @@ const AccountsList = ({ onViewDetails }) => {
                 </svg>
 
                 {/* Supprimer seulement si compte secondaire */}
-                {acc.parent_account_number && (
-                  <button
+                {acc.parent_account_number && onDelete && (
+                  <div
                     className="px-3 py-1 rounded-md font-medium text-sm"
                     style={{ backgroundColor: "var(--error)", color: "var(--text-inverse)" }}
-                    onClick={() => handleDelete(acc.account_number)}
+                    onClick={() => {
+                      const confirmed = window.confirm(
+                        `Êtes-vous sûr de vouloir supprimer le compte ${acc.account_number} ?`
+                      );
+                      if (confirmed) {
+                        onDelete(acc.account_number);
+                      }
+                    }}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -76,7 +76,7 @@ const AccountsList = ({ onViewDetails }) => {
                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4"
                       />
                     </svg>
-                  </button>
+                  </div>
                 )}
               </div>
             </button>
@@ -104,6 +104,8 @@ const AccountsList = ({ onViewDetails }) => {
                     +
                   </button>
                 </div>
+
+                {/* Transactions */}
                 <TransactionsList accountNumber={acc.account_number} />
               </div>
             )}
