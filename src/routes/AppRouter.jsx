@@ -8,6 +8,9 @@ import Dashboard from "../pages/DashboardPage";
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 
+// teste depot 
+import DepositPage from "../pages/DepositPage";
+
 const AppRouter = () => (
   <BrowserRouter>
     <AuthProvider>
