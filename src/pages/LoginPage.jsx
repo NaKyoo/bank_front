@@ -1,51 +1,30 @@
-import { useNavigate, Link } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { loginRequest } from "../api/authService";
 import LoginForm from "../components/LoginForm";
+import { handleApiError } from "../utils/handleApiError";
 import "../styles/Auth.css";
 
-/**
- * Page de connexion
- * Responsabilité : afficher le formulaire et gérer la redirection
- */
 const LoginPage = () => {
+  const [apiError, setApiError] = useState(null);
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  // Appelé quand le login réussit
-  const handleLoginSuccess = (response) => {
-    // Stocke l'utilisateur + token dans le contexte
-    login({
-      ...response.user,
-      token: response.access_token,
-    });
+  const handleLogin = async (values) => {
+    try {
+      setApiError(null);
+      const data = await loginRequest(values);
 
-    // Redirige vers le dashboard
-    navigate("/dashboard");
+      // Delegate shape handling to AuthContext.login which accepts multiple shapes
+      login(data);
+      navigate("/dashboard");
+    } catch (err) {
+      setApiError(handleApiError(err));
+    }
   };
 
-  return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <div className="auth-header">
-          <h1 className="auth-title">Connexion</h1>
-          <p className="auth-subtitle">
-            Accédez à votre espace bancaire
-          </p>
-        </div>
-
-        <LoginForm onSuccess={handleLoginSuccess} />
-
-        <div className="auth-footer">
-          <p className="auth-text">
-            Pas encore de compte ?{" "}
-            <Link to="/" className="auth-link">
-              S'inscrire
-            </Link>
-          </p>
-        </div>
-      </div>
-    </div>
-  );
+  return <LoginForm onSubmit={handleLogin} apiError={apiError} />;
 };
 
 export default LoginPage;

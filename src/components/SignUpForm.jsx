@@ -3,10 +3,12 @@ import PropTypes from "prop-types";
 import { useSignupForm } from "../hooks/useSignupForm";
 
 const SignUpForm = ({ onSubmit, apiError }) => {
-  const { values, handleChange } = useSignupForm();
+  const { values, errors, handleChange, validateAll } = useSignupForm();
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!validateAll()) return; // stop si erreurs
     onSubmit(values);
   };
 
@@ -28,6 +30,7 @@ const SignUpForm = ({ onSubmit, apiError }) => {
         </h1>
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+
           <div className="flex flex-col">
             <label style={{ color: "var(--text-muted)", marginBottom: "var(--space-xs)" }}>Email</label>
             <input
@@ -35,14 +38,19 @@ const SignUpForm = ({ onSubmit, apiError }) => {
               type="email"
               value={values.email}
               onChange={handleChange}
-              required
               className="p-3 rounded-md"
               style={{
                 backgroundColor: "var(--surface-light)",
                 color: "var(--text)",
-                border: `1px solid var(--border)`
+                border: `1px solid ${errors.email ? "var(--error)" : "var(--border)"}`
               }}
             />
+
+            {errors.email && (
+              <span style={{ color: "var(--error)", marginTop: 4 }}>
+                {errors.email}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-col">
@@ -52,21 +60,23 @@ const SignUpForm = ({ onSubmit, apiError }) => {
               type="password"
               value={values.password}
               onChange={handleChange}
-              required
               className="p-3 rounded-md"
               style={{
                 backgroundColor: "var(--surface-light)",
                 color: "var(--text)",
-                border: `1px solid var(--border)`
+                border: `1px solid ${errors.password ? "var(--error)" : "var(--border)"}`
               }}
             />
+
+            {errors.password && (
+              <span style={{ color: "var(--error)", marginTop: 4 }}>
+                {errors.password}
+              </span>
+            )}
           </div>
 
           {apiError && (
-            <p
-              className="text-center mt-2"
-              style={{ color: "var(--error)" }}
-            >
+            <p className="text-center mt-2" style={{ color: "var(--error)" }}>
               {apiError}
             </p>
           )}

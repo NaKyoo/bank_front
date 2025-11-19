@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import SignUpForm from "../components/SignUpForm";
 import { signupRequest } from "../api/authService";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { handleApiError } from "../utils/handleApiError";
 
 const SignupPage = () => {
   const [apiError, setApiError] = useState(null);
@@ -13,10 +14,10 @@ const SignupPage = () => {
     try {
       setApiError(null);
       const data = await signupRequest(values);
-      login(data.user);
-      navigate("/dashboard");
+      login({ user: data });
+      navigate("/login");
     } catch (err) {
-      setApiError(err.message);
+      setApiError(handleApiError(err));
     }
   };
 

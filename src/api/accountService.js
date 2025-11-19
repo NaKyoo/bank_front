@@ -1,17 +1,17 @@
+import { getAuthToken } from "./authService";
+
 // Service API pour gérer les comptes bancaires
 // Responsabilité unique : communiquer avec le backend
 
-/**
- * Récupère les informations de l'utilisateur connecté
- * @param {string} token - Le token JWT de l'utilisateur
- * @returns {Promise<Object>} Les données de l'utilisateur (nom, email)
- */
+const ensureToken = (token) => token || getAuthToken();
+
 export const getUserInfo = async (token) => {
+  const t = ensureToken(token);
   const response = await fetch("/api/users/me", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${t}`,
     },
   });
 
@@ -20,17 +20,13 @@ export const getUserInfo = async (token) => {
   return data;
 };
 
-/**
- * Récupère tous les comptes bancaires de l'utilisateur
- * @param {string} token - Le token JWT de l'utilisateur
- * @returns {Promise<Array>} Liste des comptes (account_number, balance, account_type, etc.)
- */
 export const getUserAccounts = async (token) => {
+  const t = ensureToken(token);
   const response = await fetch("/api/users/me/accounts", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${t}`,
     },
   });
 

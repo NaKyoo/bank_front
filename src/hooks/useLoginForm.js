@@ -1,53 +1,42 @@
 import { useState } from "react";
-import { loginRequest } from "../api/authService";
+import { validators } from "../utils/validators";
 
-/**
- * Hook custom pour gérer le formulaire de login
- * Responsabilité : gérer l'état du form et la soumission
- */
-export const useLoginForm = (onSuccess) => {
-  const [formData, setFormData] = useState({
+export const useLoginForm = () => {
+  const [values, setValues] = useState({
     email: "",
     password: "",
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
-  // Met à jour un champ du formulaire
+  const [errors, setErrors] = useState({});
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    // Efface l'erreur quand l'utilisateur tape
-    if (error) setError(null);
+
+    setValues((prev) => ({ ...prev, [name]: value }));
+
+    const error = validators[name] ? validators[name](value) : "";
+    setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
-  // Soumet le formulaire
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+  const validateAll = () => {
+    const newErrors = {};
 
-    try {
-      // Appel API pour se connecter
-      const response = await loginRequest(formData);
-      
-      // Succès : callback avec les données
-      onSuccess(response);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+    Object.keys(values).forEach((key) => {
+      if (validators[key]) {
+        const error = validators[key](values[key]);
+        if (error) newErrors[key] = error;
+      }
+    });
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
   };
 
   return {
-    formData,
-    loading,
-    error,
+    values,
+    errors,
     handleChange,
-    handleSubmit,
+    validateAll,
   };
 };

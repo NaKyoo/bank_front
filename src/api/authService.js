@@ -6,7 +6,11 @@ export const signupRequest = async (credentials) => {
   });
 
   const data = await response.json();
-  if (!response.ok) throw new Error(data.message || data.detail || "Erreur inconnue");
+  if (!response.ok) {
+    // prefer common fields, fall back to generic message
+    throw new Error(data.message || data.detail || "Erreur inconnue");
+  }
+
   return data;
 };
 
@@ -18,6 +22,15 @@ export const loginRequest = async (credentials) => {
   });
 
   const data = await response.json();
-  if (!response.ok) throw new Error(data.message || data.detail || "Erreur inconnue");
+
+  if (!response.ok) {
+    throw new Error(data.message || data.detail || "Erreur inconnue");
+  }
+
+  // Return raw data to the caller (AuthContext will decide how to store token/user)
   return data;
+};
+
+export const getAuthToken = () => {
+  return localStorage.getItem("token");
 };
