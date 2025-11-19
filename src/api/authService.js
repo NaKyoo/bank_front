@@ -27,5 +27,11 @@ export const loginRequest = async (credentials) => {
     throw new Error(data.detail || "Erreur inconnue");
   }
 
+  localStorage.setItem("token", data.token);
+
   return data;
+};
+
+export const getAuthToken = () => {
+  return localStorage.getItem("token");
 };
