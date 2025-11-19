@@ -12,6 +12,8 @@ import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 import Spinner from "../components/Spinner";
 
+import DepositPage from "../pages/DepositPage.jsx";
+
 const AppRouter = () => {
   return (
     <BrowserRouter>
