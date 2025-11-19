@@ -14,7 +14,7 @@ const SignupPage = () => {
       setApiError(null);
       const data = await signupRequest(values);
       login({ user: data });
-      navigate("/");
+      navigate("/login");
     } catch (err) {
       setApiError(err.message);
     }

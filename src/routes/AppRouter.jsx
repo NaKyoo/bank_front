@@ -1,9 +1,9 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "../context/AuthContext";
 
 import SignupPage from "../pages/SignupPage";
 import LoginPage from "../pages/LoginPage";
-import Dashboard from "../pages/DashBoardPage";
+import Dashboard from "../pages/DashboardPage";
 
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
@@ -12,20 +12,22 @@ const AppRouter = () => (
   <BrowserRouter>
     <AuthProvider>
       <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+
         {/* Pages publiques */}
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <LoginPage />
+            </PublicRoute>
+          }
+        />
         <Route
           path="/signup"
           element={
             <PublicRoute>
               <SignupPage />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/"
-          element={
-            <PublicRoute>
-              <LoginPage />
             </PublicRoute>
           }
         />
