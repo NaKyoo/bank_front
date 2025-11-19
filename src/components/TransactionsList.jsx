@@ -3,6 +3,22 @@ import { useTransactions } from "../hooks/useTransactions";
 const TransactionsList = ({ accountNumber }) => {
   const { transactions, loading, error } = useTransactions(accountNumber);
 
+  const formatType = (type) => {
+  switch (type) {
+    case "deposit":
+      return "Crédit";
+    case "transfer":
+      return "Débit";
+    default:
+      return type || "—";
+  }
+};
+
+const formatAmount = (amount) => {
+  if (amount == null) return "—";
+  return `${Number(amount).toFixed(2)} €`;
+};
+
   if (loading) return <p style={{ color: "var(--text)" }}>Chargement des transactions...</p>;
   if (error) return <p style={{ color: "var(--error)" }}>Erreur : {error}</p>;
   if (!transactions || transactions.length === 0)
@@ -27,10 +43,10 @@ const TransactionsList = ({ accountNumber }) => {
                 {new Date(txn.date).toLocaleString()}
               </td>
               <td className="px-3 py-2" style={{ borderBottom: `1px solid var(--border)` }}>
-                {txn.transaction_type || "—"}
+                {formatType(txn.transaction_type)}
               </td>
               <td className="px-3 py-2" style={{ borderBottom: `1px solid var(--border)` }}>
-                {txn.amount != null ? `${txn.amount} €` : "—"}
+                {formatAmount(txn.amount)}
               </td>
               <td className="px-3 py-2" style={{ borderBottom: `1px solid var(--border)` }}>
                 {txn.source_account_number || "—"}
