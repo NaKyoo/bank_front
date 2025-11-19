@@ -41,6 +41,16 @@ const AppRouter = () => (
             </PrivateRoute>
           }
         />
+
+        {/* Page de dépôt d'argent */}
+        <Route
+          path="/deposit"
+          element={
+            <PrivateRoute> 
+              <DepositPage />
+            </PrivateRoute> 
+        }
+        /> 
       </Routes>
     </AuthProvider>
   </BrowserRouter>
