@@ -26,7 +26,7 @@ const Header = ({ pageTitle, onLogout }) => {
     >
       {/* Bank à gauche */}
       <div
-        onClick={() => navigate("/dashboard")}
+        onClick={() => navigate("/profile")}
         className="text-xl font-bold cursor-pointer hover:text-var(--primary-light) transition-colors"
         style={{ color: "var(--primary)" }}
       >

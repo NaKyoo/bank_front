@@ -10,7 +10,7 @@ const PublicRoute = ({ children }) => {
   if (loading) return <Spinner />;
 
   if (user) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/profile" replace />;
   }
 
   return children;

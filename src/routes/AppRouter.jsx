@@ -5,7 +5,6 @@ import { AuthProvider } from "../context/AuthContext";
 
 import SignupPage from "../pages/SignupPage";
 import LoginPage from "../pages/LoginPage";
-import Dashboard from "../pages/DashboardPage";
 import ProfilePage from "../pages/ProfilePage";
 import SendMoneyPage from "../pages/SendMoneyPage";
 
@@ -58,14 +57,7 @@ const RouterContent = () => {
         />
 
         {/* Pages privées */}
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute>
-              <Dashboard />
-            </PrivateRoute>
-          }
-        />
+        <Route path="/dashboard" element={<Navigate to="/profile" replace />} />
         <Route
           path="/profile"
           element={

@@ -18,7 +18,7 @@ const LoginPage = () => {
 
       // Delegate shape handling to AuthContext.login which accepts multiple shapes
       login(data);
-      navigate("/dashboard");
+      navigate("/profile");
     } catch (err) {
       setApiError(handleApiError(err));
     }

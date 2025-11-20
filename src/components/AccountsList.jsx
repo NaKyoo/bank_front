@@ -2,7 +2,7 @@ import { useState } from "react";
 import { parseDate } from "../utils/parseDate";
 import TransactionsList from "./TransactionsList";
 
-const AccountsList = ({ accounts, onViewDetails, onDelete }) => {
+const AccountsList = ({ accounts, onViewDetails, onDelete, onTransfer }) => {
   const [openAccount, setOpenAccount] = useState(null);
 
   const toggleAccount = (accountNumber) => {
@@ -118,9 +118,21 @@ const AccountsList = ({ accounts, onViewDetails, onDelete }) => {
                 >
                   {/* ⭐︎ Boutons actions */}
                   <div className="flex justify-around">
-                    {["Dépôt", "Virement", "Historique"].map((label) => (
+                    {['Dépôt', 'Virement', 'Historique'].map((label) => (
                       <button
                         key={label}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (label === 'Virement' && onTransfer) {
+                            onTransfer(acc.account_number);
+                            return;
+                          }
+                          if (label === 'Historique' && onViewDetails) {
+                            onViewDetails(acc.account_number);
+                            return;
+                          }
+                          // other actions can be handled by parent if needed
+                        }}
                         className="
                           px-4 py-2 rounded-md font-medium text-sm
                           transition-all duration-300 cursor-pointer

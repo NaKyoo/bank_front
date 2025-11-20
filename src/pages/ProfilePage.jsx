@@ -5,15 +5,18 @@ import { useAccounts } from "../hooks/useAccounts";
 import AccountsList from "../components/AccountsList";
 import Header from "../components/Header";
 import DownloadPdf from "../components/DownloadPdf";
+import TransferModal from "../components/modal/TransferModal";
 
 import OpenAccountModal from "../components/modal/OpenAccountModal";
 import Modal from "../components/modal/Modal";
 
 const ProfilePage = () => {
-  const { logout } = useAuth();
+  const { logout, token } = useAuth();
   const navigate = useNavigate();
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [openModal, setOpenModal] = useState(false);
+  const [transferOpen, setTransferOpen] = useState(false);
+  const [transferSource, setTransferSource] = useState(null);
 
   const {
     accounts,
@@ -96,6 +99,7 @@ const ProfilePage = () => {
                 await deleteAccount(accNum);
                 await refresh();
               }}
+              onTransfer={(accNum) => { setTransferSource(accNum); setTransferOpen(true); }}
             />
           )}
 
@@ -130,6 +134,16 @@ const ProfilePage = () => {
             refresh={refresh}
           />
         </Modal>
+      
+      {transferOpen && (
+        <TransferModal
+          accounts={accounts}
+          defaultFrom={transferSource}
+          onClose={() => { setTransferOpen(false); setTransferSource(null); }}
+          onSuccess={async () => { await refresh(); }}
+          token={token}
+        />
+      )}
       </div>
     </div>
   );
