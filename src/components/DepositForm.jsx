@@ -57,7 +57,6 @@ const DepositPage = () => {
             <h2 className="text-2xl font-semibold mb-6 text-center text-[var(--primary-light)]">Faire un dépôt</h2>
 
             <form onSubmit={handleSubmit} className ="flex flex-col gap-4">
-
                 <input 
                     type="texte"
                     placeholder="Numéro de compte"
@@ -78,7 +77,7 @@ const DepositPage = () => {
                     className="bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-[var(--text-inverse)] font-medium py-2 rounded-md transition"
                 >Déposer</button>
             </form>
-        
+            
             {// rendering conditionnele des messages d'erreur et de succès //
             error && <p className="mt-4 text-[var(--error)] text-sm text-center">{error}</p>}
             {success && <p className="mt-4 text-[var(--success)] text-sm text-center">{success}</p>}

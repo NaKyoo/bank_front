@@ -13,6 +13,7 @@ import PublicRoute from "./PublicRoute";
 import Spinner from "../components/Spinner";
 
 import DepositPage from "../pages/DepositPage.jsx";
+import TransactionDetailsPage from "../pages/TransactionDetailsPage.jsx";
 
 const AppRouter = () => {
   return (
@@ -87,6 +88,16 @@ const RouterContent = () => {
             </PrivateRoute> 
         }
         /> 
+
+        {/* Page de détzils de transaction */}
+        <Route
+          path="/transactions/:userAccountNumber/:transactionId"
+          element={
+            <PrivateRoute>
+              <TransactionDetailsPage/>
+            </PrivateRoute>
+          }
+          />
       </Routes>
     </>
   );
