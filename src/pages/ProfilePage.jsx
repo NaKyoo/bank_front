@@ -6,7 +6,6 @@ import AccountsList from "../components/AccountsList";
 import Header from "../components/Header";
 
 import OpenAccountModal from "../components/modal/OpenAccountModal";
-import DetailsModal from "../components/modal/DetailsModal";
 import Modal from "../components/modal/Modal";
 
 const ProfilePage = () => {
@@ -24,7 +23,9 @@ const ProfilePage = () => {
     deleteAccount,
   } = useAccounts();
 
-  const parentAccountNumber = selectedAccount?.account_number || accounts.find(acc => acc.parent_account_number === null)?.account_number;
+  const parentAccountNumber =
+    selectedAccount?.account_number ||
+    accounts.find((acc) => acc.parent_account_number === null)?.account_number;
 
   const handleLogout = () => {
     logout();
@@ -42,40 +43,67 @@ const ProfilePage = () => {
 
       <div className="flex items-center justify-center p-6">
         <div
-          className="w-full max-w-3xl p-8 rounded-lg shadow-lg"
+          className="w-full max-w-3xl p-8 rounded-lg shadow-lg transition-all"
           style={{
             backgroundColor: "var(--surface)",
             boxShadow: "var(--shadow)",
             borderRadius: "var(--radius-lg)",
           }}
         >
+          {/* Header comptes */}
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold" style={{ color: "var(--primary)" }}>
+            <h2
+              className="text-xl font-bold"
+              style={{ color: "var(--primary)" }}
+            >
               Mes comptes
             </h2>
+
+            {/* BTN Ouvrir un compte */}
             <button
               onClick={() => setOpenModal(true)}
-              className="px-4 py-2 rounded-md bg-primary text-text-inverse font-semibold hover:brightness-110 transition"
+              className="
+                px-4 py-2 rounded-md font-semibold
+                transition-all duration-300
+                hover:scale-105 hover:brightness-110 hover:shadow-md
+              "
+              style={{
+                backgroundColor: "var(--primary)",
+                color: "var(--text-inverse)",
+                cursor: "pointer",
+              }}
             >
               Ouvrir un compte
             </button>
           </div>
 
+          {/* Accounts */}
           {loading && <p style={{ color: "var(--text)" }}>Chargement...</p>}
           {error && <p style={{ color: "var(--error)" }}>{error}</p>}
+
           {!loading && !error && accounts.length > 0 && (
-            <AccountsList accounts={accounts} onViewDetails={setSelectedAccount} onDelete={async (accNum) => {
+            <AccountsList
+              accounts={accounts}
+              onViewDetails={setSelectedAccount}
+              onDelete={async (accNum) => {
                 await deleteAccount(accNum);
                 await refresh();
-            }} />
+              }}
+            />
           )}
+
           {!loading && !error && accounts.length === 0 && (
             <p style={{ color: "var(--text)" }}>Aucun compte trouvé.</p>
           )}
 
+          {/* Bouton Logout */}
           <button
             onClick={handleLogout}
-            className="mt-6 w-full p-3 rounded-md font-bold text-lg transition duration-300 hover:brightness-110 hover:scale-105"
+            className="
+              mt-6 w-full p-3 rounded-md font-bold text-lg
+              transition-all duration-300
+              hover:scale-105 hover:brightness-110 hover:shadow-md
+            "
             style={{
               backgroundColor: "var(--error)",
               color: "var(--text-inverse)",
@@ -86,19 +114,14 @@ const ProfilePage = () => {
           </button>
         </div>
 
-        {/* Modal Détails du compte */}
-        <Modal isOpen={!!selectedAccount} onClose={closeModal}>
-          <DetailsModal account={selectedAccount} onClose={closeModal} />
-        </Modal>
-
-        {/* Modal Ouvrir un compte secondaire */}
+        {/* Modal Ouvrir un compte */}
         <Modal isOpen={openModal} onClose={closeModal}>
-           <OpenAccountModal
-              parentAccountNumber={parentAccountNumber}
-              onClose={closeModal}
-              openAccount={openAccount}
-              refresh={refresh}         
-            />
+          <OpenAccountModal
+            parentAccountNumber={parentAccountNumber}
+            onClose={closeModal}
+            openAccount={openAccount}
+            refresh={refresh}
+          />
         </Modal>
       </div>
     </div>

@@ -4,20 +4,20 @@ const TransactionsList = ({ accountNumber }) => {
   const { transactions, loading, error } = useTransactions(accountNumber);
 
   const formatType = (type) => {
-  switch (type) {
-    case "deposit":
-      return "Crédit";
-    case "transfer":
-      return "Débit";
-    default:
-      return type || "—";
-  }
-};
+    switch (type) {
+      case "deposit":
+        return "Crédit";
+      case "transfer":
+        return "Débit";
+      default:
+        return type || "—";
+    }
+  };
 
-const formatAmount = (amount) => {
-  if (amount == null) return "—";
-  return `${Number(amount).toFixed(2)} €`;
-};
+  const formatAmount = (amount) => {
+    if (amount == null) return "—";
+    return `${Number(amount).toFixed(2)} €`;
+  };
 
   if (loading) return <p style={{ color: "var(--text)" }}>Chargement des transactions...</p>;
   if (error) return <p style={{ color: "var(--error)" }}>Erreur : {error}</p>;
@@ -25,7 +25,14 @@ const formatAmount = (amount) => {
     return <p style={{ color: "var(--text-muted)" }}>Aucune transaction trouvée.</p>;
 
   return (
-    <div className="overflow-x-auto">
+    <div
+      className="overflow-y-auto overflow-x-auto"
+      style={{
+        maxHeight: "250px",
+        border: `1px solid var(--border)`,
+        borderRadius: "8px"
+      }}
+    >
       <table className="w-full" style={{ borderCollapse: "collapse" }}>
         <thead>
           <tr style={{ backgroundColor: "var(--surface-light)" }}>
@@ -36,6 +43,7 @@ const formatAmount = (amount) => {
             <th className="px-3 py-2" style={{ borderBottom: `1px solid var(--border)` }}>Destination</th>
           </tr>
         </thead>
+
         <tbody>
           {transactions.map((txn, index) => (
             <tr key={index} className="hover:opacity-80 transition">
