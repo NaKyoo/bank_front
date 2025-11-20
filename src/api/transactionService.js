@@ -17,3 +17,22 @@ export const getTransactions = async (accountNumber, token) => {
 
   return Array.isArray(data) ? data : [];
 };
+
+export const getAllTransactions = async (token) => {
+
+  const response = await fetch(`/api/users/me/transactions`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || "Erreur lors de la récupération des transactions");
+  }
+
+  return Array.isArray(data) ? data : [];
+};

@@ -1,8 +1,8 @@
 import { jsPDF } from "jspdf";
-import { useTransactions } from "../hooks/useTransactions";
+import { useAllTransactions } from "../hooks/useAllTransactions";
 
-const DownloadPdf = ({ accountNumber }) => {
-  const { transactions, loading, error } = useTransactions(accountNumber);
+const DownloadPdf = () => {
+  const { transactions, loading, error } = useAllTransactions();
 
   const generatePDF = () => {
     if (!transactions || transactions.length === 0) return;

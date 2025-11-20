@@ -79,11 +79,10 @@ const ProfilePage = () => {
           </div>
 
           {/* Bouton Télécharger le relevé */}
-          {parentAccountNumber && (
-            <div className="mb-4">
-              <DownloadPdf accountNumber={parentAccountNumber} />
-            </div>
-          )}
+          <div className="mb-4">
+            <DownloadPdf />
+          </div>
+
 
           {/* Accounts */}
           {loading && <p style={{ color: "var(--text)" }}>Chargement...</p>}
