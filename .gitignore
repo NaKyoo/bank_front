@@ -6,6 +6,14 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
 node_modules
 dist
@@ -22,3 +30,29 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Test files and artifacts
+# generic test files
+test-*
+test*.http
+*.test.*
+*.spec.*
+
+# test folders
+**/tests/
+**/__tests__/
+
+# Python/JS test caches and coverage
+.pytest_cache/
+coverage/
+.nyc_output/
+coverage.*
+
+# test run artifacts produced by our scripts
+scripts/failures/
+*.bak
+*.db.bak
+bank.db.bak
+
+# temporary vscode test files
+.vscode-test/

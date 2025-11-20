@@ -9,6 +9,9 @@ const Modal = ({ isOpen, onClose, children }) => {
       style={{
         backgroundColor: "rgba(15, 15, 15, 0.6)",
         backdropFilter: "blur(4px)",
+        // allow scrolling when modal content is taller than viewport
+        overflowY: 'auto',
+        padding: '1.5rem',
       }}
       onClick={onClose}
     >
@@ -17,7 +20,11 @@ const Modal = ({ isOpen, onClose, children }) => {
         style={{
           borderRadius: "var(--radius-lg)",
           boxShadow: "var(--shadow)",
-          backgroundColor: "var(--surface)"
+          backgroundColor: "var(--surface)",
+          // allow wider modals but keep them inside viewport
+          maxWidth: 'min(95vw, 720px)',
+          maxHeight: '90vh',
+          overflowY: 'auto',
         }}
         onClick={(e) => e.stopPropagation()}
       >

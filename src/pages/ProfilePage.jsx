@@ -7,6 +7,8 @@ import Header from "../components/Header";
 import DownloadPdf from "../components/DownloadPdf";
 import TransferModal from "../components/modal/TransferModal";
 import Notification from "../components/Notification";
+import BeneficiariesModal from "../components/modal/BeneficiariesModal";
+import "../styles/beneficiaries.css";
 
 import OpenAccountModal from "../components/modal/OpenAccountModal";
 import Modal from "../components/modal/Modal";
@@ -20,6 +22,7 @@ const ProfilePage = () => {
   const [transferSource, setTransferSource] = useState(null);
   const [notification, setNotification] = useState(null);
   const [transactionsRefreshKey, setTransactionsRefreshKey] = useState(0);
+  const [beneficiariesOpen, setBeneficiariesOpen] = useState(false);
 
   const {
     accounts,
@@ -70,6 +73,20 @@ const ProfilePage = () => {
             <div className="flex gap-2">
               {/* Bouton Télécharger le relevé */}
               <DownloadPdf />
+
+              {/* Bouton Bénéficiaires */}
+              <button
+                onClick={() => setBeneficiariesOpen(true)}
+                className={
+                  `
+                  px-4 py-2 rounded-md font-semibold
+                  transition-all duration-300
+                  hover:scale-105 hover:brightness-110 hover:shadow-md
+                ` + ' beneficiaries-open-btn'
+                }
+              >
+                Bénéficiaires
+              </button>
 
               {/* BTN Ouvrir un compte */}
               <button
@@ -143,6 +160,15 @@ const ProfilePage = () => {
             refresh={refresh}
           />
         </Modal>
+
+        {/* Modal Bénéficiaires */}
+        {beneficiariesOpen && (
+          <BeneficiariesModal
+            isOpen={beneficiariesOpen}
+            onClose={() => setBeneficiariesOpen(false)}
+            ownerAccountNumber={parentAccountNumber}
+          />
+        )}
       
           {transferOpen && (
         <TransferModal
@@ -165,7 +191,7 @@ const ProfilePage = () => {
               const bg = (result && result._ui && result._ui.bg) || 'var(--primary)';
               const color = (result && result._ui && result._ui.color) || 'var(--text-inverse)';
               setNotification({ message: msg, bgColor: bg, textColor: color, duration: 4000 });
-            } catch (e) {}
+            } catch (e) { console.debug('notify error', e); }
           }}
           token={token}
         />

@@ -16,22 +16,23 @@ export const useTransfer = () => {
       // If backend returns a transaction id and status is pending, poll until completed
       setResult(data);
 
-      const txId = data?.transaction_id || data?.id || data?.transaction?.id;
-      const status = data?.status || data?.transaction?.status;
-      if (txId && status && String(status).toLowerCase().includes("pending")) {
+      const transactionId = data?.transaction_id || data?.id || data?.transaction?.id;
+      const initialStatus = data?.status || data?.transaction?.status;
+      if (transactionId && initialStatus && String(initialStatus).toLowerCase().includes("pending")) {
         const maxRetries = 12; // ~12s
         const delayMs = 1000;
         for (let i = 0; i < maxRetries; i++) {
           try {
-            await new Promise((res) => setTimeout(res, delayMs));
-            const tx = await getTransaction({ user_account_number: from_account, transaction_id: txId, token });
-            const s = tx?.status || tx?.transaction?.status;
-            if (s && String(s).toLowerCase().includes("completed")) {
-              setResult(tx);
-              return tx;
+            await new Promise((resolve) => setTimeout(resolve, delayMs));
+            const updatedTransaction = await getTransaction({ user_account_number: from_account, transaction_id: transactionId, token });
+            const currentStatus = updatedTransaction?.status || updatedTransaction?.transaction?.status;
+            if (currentStatus && String(currentStatus).toLowerCase().includes("completed")) {
+              setResult(updatedTransaction);
+              return updatedTransaction;
             }
-          } catch (pollErr) {
+          } catch (pollingError) {
             // ignore transient polling errors and continue
+            console.debug('Polling attempt failed, retrying...', pollingError.message);
           }
         }
         // timeout — return original pending data
