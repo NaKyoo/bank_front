@@ -12,7 +12,7 @@ import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 import Spinner from "../components/Spinner";
 
-import DepositPage from "../pages/DepositPage.jsx";
+import DepositForm from "../components/DepositForm.jsx"; // modifier 
 import TransactionDetailsPage from "../pages/TransactionDetailsPage.jsx";
 
 const AppRouter = () => {
@@ -84,12 +84,12 @@ const RouterContent = () => {
           path="/deposit"
           element={
             <PrivateRoute> 
-              <DepositPage />
+              <DepositForm />
             </PrivateRoute> 
         }
         /> 
 
-        {/* Page de détzils de transaction */}
+        {/* Page de détails de transaction */}
         <Route
           path="/transactions/:userAccountNumber/:transactionId"
           element={

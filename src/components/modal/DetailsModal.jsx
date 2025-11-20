@@ -1,6 +1,9 @@
 import PropTypes from "prop-types";
 import { parseDate } from "../../utils/parseDate";
 
+// utiliser pour les bouton de navigation -évite les rechargement //
+import { Link } from "react-router-dom";
+
 const DetailsModal = ({ account}) => {
   if (!account) return null;
 
@@ -18,21 +21,23 @@ const DetailsModal = ({ account}) => {
       </div>
 
       <div className="flex flex-col gap-3 mt-4">
-        <button className="p-3 rounded-md bg-primary text-text-inverse font-semibold hover:brightness-110 transition">
+        <Link
+          to="/deposit" 
+          className="p-3 rounded-md bg-primary text-text-inverse font-semibold hover:brightness-110 transition">
           Faire un dépôt
-        </button>
+        </Link>
         <button className="p-3 rounded-md bg-primary text-text-inverse font-semibold hover:brightness-110 transition">
           Faire un virement
         </button>
         <button className="p-3 rounded-md bg-primary text-text-inverse font-semibold hover:brightness-110 transition">
           Voir l'historique
         </button>
-        <button
-          href="/dashboard"
+        <Link
+          to="/dashboard"
           className="p-3 rounded-md bg-error text-text-inverse font-semibold hover:brightness-110 transition"
         >
           Retour
-        </button>
+        </Link>
       </div>
     </div>
   );
