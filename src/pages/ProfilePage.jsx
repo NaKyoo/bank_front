@@ -140,7 +140,12 @@ const ProfilePage = () => {
           accounts={accounts}
           defaultFrom={transferSource}
           onClose={() => { setTransferOpen(false); setTransferSource(null); }}
-          onSuccess={async () => { await refresh(); }}
+          onSuccess={async () => {
+            // Refresh twice with a short delay to allow backend async processing
+            await refresh();
+            await new Promise((res) => setTimeout(res, 800));
+            await refresh();
+          }}
           token={token}
         />
       )}

@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 import { getUserAccounts, closeAccount as apiCloseAccount, archiveAccount as apiArchiveAccount, openAccount as apiOpenAccount } from "../api/accountService";
 
 export const useAccounts = () => {
+  const auth = useAuth();
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -11,7 +13,8 @@ export const useAccounts = () => {
     setLoading(true);
     setError(null);
     try {
-      let data = await getUserAccounts();
+      const token = auth?.token || auth?.access_token || null;
+      let data = await getUserAccounts(token);
       setAccounts(Array.isArray(data) ? data : (data && data.value ? data.value : []));
     } catch (err) {
       setError(err.message || "Erreur lors de la récupération des comptes");
@@ -22,6 +25,7 @@ export const useAccounts = () => {
 
   useEffect(() => {
     fetchAccounts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const closeAccount = async (accountNumber) => {
