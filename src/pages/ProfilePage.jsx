@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAccounts } from "../hooks/useAccounts";
 import AccountsList from "../components/AccountsList";
 import Header from "../components/Header";
+import DownloadPdf from "../components/DownloadPdf";
 
 import OpenAccountModal from "../components/modal/OpenAccountModal";
 import Modal from "../components/modal/Modal";
@@ -76,6 +77,13 @@ const ProfilePage = () => {
               Ouvrir un compte
             </button>
           </div>
+
+          {/* Bouton Télécharger le relevé */}
+          {parentAccountNumber && (
+            <div className="mb-4">
+              <DownloadPdf accountNumber={parentAccountNumber} />
+            </div>
+          )}
 
           {/* Accounts */}
           {loading && <p style={{ color: "var(--text)" }}>Chargement...</p>}
