@@ -85,6 +85,28 @@ export const useAccounts = () => {
     }
   };
 
+  // Apply a transfer optimistically to local accounts state
+  const applyTransfer = ({ from_account, to_account, amount }) => {
+    if (!from_account || !to_account || !amount) return;
+    const amt = typeof amount === 'number' ? amount : parseFloat(String(amount).replace(',', '.')) || 0;
+    setAccounts((prev) => {
+      if (!Array.isArray(prev)) return prev;
+      return prev.map((acc) => {
+        const id = acc.account_number || acc.id || acc.primary_account_number;
+        if (id == null) return acc;
+        if (String(id) === String(from_account)) {
+          const bal = Number(acc.balance ?? acc.amount ?? 0) - amt;
+          return { ...acc, balance: Number.isFinite(bal) ? bal : acc.balance };
+        }
+        if (String(id) === String(to_account)) {
+          const bal = Number(acc.balance ?? acc.amount ?? 0) + amt;
+          return { ...acc, balance: Number.isFinite(bal) ? bal : acc.balance };
+        }
+        return acc;
+      });
+    });
+  };
+
   return {
     accounts,
     loading,

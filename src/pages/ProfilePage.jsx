@@ -24,6 +24,7 @@ const ProfilePage = () => {
     error,
     openAccount,
     refresh,
+    applyTransfer,
     deleteAccount,
   } = useAccounts();
 
@@ -140,10 +141,22 @@ const ProfilePage = () => {
           accounts={accounts}
           defaultFrom={transferSource}
           onClose={() => { setTransferOpen(false); setTransferSource(null); }}
-          onSuccess={async () => {
-            // Refresh twice with a short delay to allow backend async processing
+          onSuccess={async (res) => {
+            // Apply optimistic update locally if we have returned data
+            try {
+              if (res && (res.from_account || res.from || res.source_account)) {
+                const from = res.from_account || res.from || res.source_account || transferSource;
+                const to = res.to_account || res.to || res.destination_account;
+                const amount = res.amount || res.value || res.amount_transferred;
+                applyTransfer({ from_account: from, to_account: to, amount });
+              }
+            } catch (e) {
+              // ignore optimistic update errors
+            }
+
+            // Refresh twice with a short delay to ensure backend state is reflected
             await refresh();
-            await new Promise((res) => setTimeout(res, 800));
+            await new Promise((resDelay) => setTimeout(resDelay, 800));
             await refresh();
           }}
           token={token}
