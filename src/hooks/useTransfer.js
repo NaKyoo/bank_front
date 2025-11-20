@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { transfer, getTransaction } from "../api/accountService";
+import { transfer, getTransaction } from "../api/transactionService";
 
 export const useTransfer = () => {
   const [loading, setLoading] = useState(false);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { accountService } from "../api/accountService";
+import { getUserAccounts, closeAccount as apiCloseAccount, archiveAccount as apiArchiveAccount, openAccount as apiOpenAccount } from "../api/accountService";
 
 export const useAccounts = () => {
   const [accounts, setAccounts] = useState([]);
@@ -11,8 +11,8 @@ export const useAccounts = () => {
     setLoading(true);
     setError(null);
     try {
-      let data = await accountService.getMyAccounts();
-      setAccounts(data);
+      let data = await getUserAccounts();
+      setAccounts(Array.isArray(data) ? data : (data && data.value ? data.value : []));
     } catch (err) {
       setError(err.message || "Erreur lors de la récupération des comptes");
     } finally {
@@ -28,7 +28,7 @@ export const useAccounts = () => {
     setActionLoading(true);
     setError(null);
     try {
-      return await accountService.closeAccount(accountNumber);
+      return await apiCloseAccount(accountNumber);
     } catch (err) {
       setError(err.message || "Erreur lors de la clôture du compte");
       throw err;
@@ -41,7 +41,7 @@ export const useAccounts = () => {
     setActionLoading(true);
     setError(null);
     try {
-      return await accountService.archiveAccount(accountNumber, reason);
+      return await apiArchiveAccount(accountNumber, reason);
     } catch (err) {
       setError(err.message || "Erreur lors de l'archivage du compte");
       throw err;
@@ -70,7 +70,7 @@ export const useAccounts = () => {
     setActionLoading(true);
     setError(null);
     try {
-      const newAccount = await accountService.openAccount({ account_number, parent_account_number, initial_balance });
+      const newAccount = await apiOpenAccount({ account_number, parent_account_number, initial_balance });
       await fetchAccounts();
       return newAccount;
     } catch (err) {
