@@ -3,13 +3,25 @@ import { useAuth } from "../context/AuthContext";
 import { getAllTransactions } from "../api/transactionService";
 
 export const useAllTransactions = () => {
-  const { token } = useAuth();
+  const { token, loading: authLoading } = useAuth();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!token) return;
+    // Wait for auth to finish loading
+    if (authLoading) {
+      setLoading(true);
+      return;
+    }
+
+    // If no token after auth loaded, set loading false and bail
+    if (!token) {
+      setLoading(false);
+      setTransactions([]);
+      setError(null);
+      return;
+    }
 
     const fetchTransactions = async () => {
       setLoading(true);
@@ -25,7 +37,7 @@ export const useAllTransactions = () => {
     };
 
     fetchTransactions();
-  }, [token]);
+  }, [token, authLoading]);
 
   return { transactions, loading, error };
 };

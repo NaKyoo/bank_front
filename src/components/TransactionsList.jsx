@@ -1,7 +1,7 @@
 import { useTransactions } from "../hooks/useTransactions";
 
-const TransactionsList = ({ accountNumber }) => {
-  const { transactions, loading, error } = useTransactions(accountNumber);
+const TransactionsList = ({ accountNumber, refreshKey = 0 }) => {
+  const { transactions, loading, error } = useTransactions(accountNumber, refreshKey);
 
   const formatType = (type) => {
     switch (type) {

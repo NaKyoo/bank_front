@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getTransactions } from "../api/transactionService";
 
-export const useTransactions = (accountNumber) => {
+export const useTransactions = (accountNumber, refreshKey = 0) => {
   const { token } = useAuth();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,7 +25,7 @@ export const useTransactions = (accountNumber) => {
     };
 
     loadTransactions();
-  }, [accountNumber, token]);
+  }, [accountNumber, token, refreshKey]);
 
   return { transactions, loading, error };
 };

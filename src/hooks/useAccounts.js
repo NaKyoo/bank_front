@@ -14,6 +14,11 @@ export const useAccounts = () => {
     setError(null);
     try {
       const token = auth?.token || auth?.access_token || null;
+      if (!token) {
+        setAccounts([]);
+        setLoading(false);
+        return;
+      }
       let data = await getUserAccounts(token);
       setAccounts(Array.isArray(data) ? data : (data && data.value ? data.value : []));
     } catch (err) {
@@ -24,9 +29,15 @@ export const useAccounts = () => {
   };
 
   useEffect(() => {
+    // Wait for AuthContext to finish loading before attempting to fetch
+    if (auth?.loading) {
+      return;
+    }
+    
+    // Once auth is loaded, fetch accounts (fetchAccounts handles missing token)
     fetchAccounts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [auth?.loading, auth?.token]);
 
   const closeAccount = async (accountNumber) => {
     setActionLoading(true);
@@ -91,7 +102,7 @@ export const useAccounts = () => {
     const amt = typeof amount === 'number' ? amount : parseFloat(String(amount).replace(',', '.')) || 0;
     setAccounts((prev) => {
       if (!Array.isArray(prev)) return prev;
-      return prev.map((acc) => {
+      const updated = prev.map((acc) => {
         const id = acc.account_number || acc.id || acc.primary_account_number;
         if (id == null) return acc;
         if (String(id) === String(from_account)) {
@@ -104,6 +115,8 @@ export const useAccounts = () => {
         }
         return acc;
       });
+      // Force new array reference so React sees the change
+      return [...updated];
     });
   };
 
@@ -116,6 +129,7 @@ export const useAccounts = () => {
     archiveAccount,
     deleteAccount,
     openAccount,
+    applyTransfer,
     refresh: fetchAccounts,
   };
 };

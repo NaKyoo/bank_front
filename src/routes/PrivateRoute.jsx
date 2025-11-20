@@ -5,11 +5,11 @@ import { useAuth } from "../context/AuthContext";
 import Spinner from "../components/Spinner";
 
 const PrivateRoute = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user, token, loading } = useAuth();
 
   if (loading) return <Spinner />;
   
-  if (!user) {
+  if (!user || !token) {
     return <Navigate to="/login" replace />;
   }
 

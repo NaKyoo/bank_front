@@ -1,38 +1,119 @@
-### Fichier de test HTTP pour créer un utilisateur
+### Fichier de test HTTP pour créer un utilisateur avec plusieurs comptes
 ### Utilise l'extension REST Client dans VS Code ou copie les requêtes dans Postman/Thunder Client
 
-### 1. Créer un utilisateur (Inscription)
-POST http://127.0.0.1:8000/users/register
+@baseUrl = http://127.0.0.1:8000
+@token = 
+
+### 1. Créer un nouvel utilisateur (Inscription)
+POST {{baseUrl}}/users/register
 Content-Type: application/json
 
 {
-  "name": "Jean Dupont",
-  "email": "jean.dupont@test.com",
-  "password": "password123"
+  "name": "Marie Martin",
+  "email": "marie.martin@test.com",
+  "password": "Secure123!"
 }
 
 ###
 
 ### 2. Se connecter (Login)
-POST http://127.0.0.1:8000/users/login
+# @name login
+POST {{baseUrl}}/users/login
 Content-Type: application/json
 
 {
-  "email": "jean.dupont@test.com",
-  "password": "password123"
+  "email": "marie.martin@test.com",
+  "password": "Secure123!"
 }
 
 ###
 
-### 3. Récupérer les infos de l'utilisateur (nécessite le token)
-# Remplace YOUR_TOKEN_HERE par le token reçu lors du login
-GET http://127.0.0.1:8000/users/me
-Authorization: Bearer YOUR_TOKEN_HERE
+### 3. Récupérer les infos de l'utilisateur
+# Remplace le token ci-dessous par celui reçu au login
+GET {{baseUrl}}/users/me
+Authorization: Bearer {{token}}
 
 ###
 
-### 4. Récupérer les comptes de l'utilisateur (nécessite le token)
-GET http://127.0.0.1:8000/users/me/accounts
-Authorization: Bearer YOUR_TOKEN_HERE
+### 4. Créer un compte principal avec 5000€
+POST {{baseUrl}}/accounts
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "account_number": "ACC2024001",
+  "parent_account_number": null,
+  "initial_balance": 5000.00
+}
+
+###
+
+### 5. Créer un compte secondaire "Épargne" avec 2500€
+POST {{baseUrl}}/accounts
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "account_number": "ACC2024001-S1",
+  "parent_account_number": "ACC2024001",
+  "initial_balance": 2500.00
+}
+
+###
+
+### 6. Créer un compte secondaire "Projets" avec 1200€
+POST {{baseUrl}}/accounts
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "account_number": "ACC2024001-S2",
+  "parent_account_number": "ACC2024001",
+  "initial_balance": 1200.00
+}
+
+###
+
+### 7. Créer un compte secondaire "Vacances" avec 800€
+POST {{baseUrl}}/accounts
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "account_number": "ACC2024001-S3",
+  "parent_account_number": "ACC2024001",
+  "initial_balance": 800.00
+}
+
+###
+
+### 8. Récupérer tous les comptes créés
+GET {{baseUrl}}/users/me/accounts
+Authorization: Bearer {{token}}
+
+###
+
+### 9. (Optionnel) Faire un dépôt de 500€ sur le compte principal
+POST {{baseUrl}}/deposit
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "account_number": "ACC2024001",
+  "amount": 500.00
+}
+
+###
+
+### 10. (Optionnel) Faire un virement de 300€ du principal vers Épargne
+POST {{baseUrl}}/transfer
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "from_account": "ACC2024001",
+  "to_account": "ACC2024001-S1",
+  "amount": 300.00
+}
 
 ###

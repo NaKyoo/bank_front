@@ -19,6 +19,7 @@ const ProfilePage = () => {
   const [transferOpen, setTransferOpen] = useState(false);
   const [transferSource, setTransferSource] = useState(null);
   const [notification, setNotification] = useState(null);
+  const [transactionsRefreshKey, setTransactionsRefreshKey] = useState(0);
 
   const {
     accounts,
@@ -98,11 +99,16 @@ const ProfilePage = () => {
             <AccountsList
               accounts={accounts}
               onViewDetails={setSelectedAccount}
+              refreshKey={transactionsRefreshKey}
               onDelete={async (accNum) => {
                 await deleteAccount(accNum);
                 await refresh();
+                setTransactionsRefreshKey((prev) => prev + 1);
               }}
-              onTransfer={(accNum) => { setTransferSource(accNum); setTransferOpen(true); }}
+              onTransfer={(accNum) => {
+                setTransferSource(accNum);
+                setTransferOpen(true);
+              }}
             />
           )}
 
@@ -143,31 +149,24 @@ const ProfilePage = () => {
           accounts={accounts}
           defaultFrom={transferSource}
           onClose={() => { setTransferOpen(false); setTransferSource(null); }}
-          onSuccess={async (res) => {
-            // Apply optimistic update locally if we have returned data
-            try {
-              if (res && (res.from_account || res.from || res.source_account)) {
-                const from = res.from_account || res.from || res.source_account || transferSource;
-                const to = res.to_account || res.to || res.destination_account;
-                const amount = res.amount || res.value || res.amount_transferred;
-                applyTransfer({ from_account: from, to_account: to, amount });
-              }
-            } catch (e) {
-              // ignore optimistic update errors
-            }
+          onSuccess={async ({ from_account, to_account, amount, result }) => {
+            // Apply optimistic update immediately
+            applyTransfer({ from_account, to_account, amount });
+            
+            // Bump transactions key to trigger re-fetch
+            setTransactionsRefreshKey((prev) => prev + 1);
 
-            // Refresh twice with a short delay to ensure backend state is reflected
+            // Refresh accounts from backend to sync real balances
             await refresh();
-            await new Promise((resDelay) => setTimeout(resDelay, 800));
-            await refresh();
-                // Show notification (customizable colors can be passed from response or use defaults)
-                try {
-                  const msg = (res && (res.message || res.note)) || "Virement effectué";
-                  const bg = (res && res._ui && res._ui.bg) || 'var(--primary)';
-                  const color = (res && res._ui && res._ui.color) || 'var(--text-inverse)';
-                  setNotification({ message: msg, bgColor: bg, textColor: color, duration: 4000 });
-                } catch (e) {}
-              }}
+            
+            // Show notification
+            try {
+              const msg = (result && (result.message || result.note)) || "Virement effectué";
+              const bg = (result && result._ui && result._ui.bg) || 'var(--primary)';
+              const color = (result && result._ui && result._ui.color) || 'var(--text-inverse)';
+              setNotification({ message: msg, bgColor: bg, textColor: color, duration: 4000 });
+            } catch (e) {}
+          }}
           token={token}
         />
       )}

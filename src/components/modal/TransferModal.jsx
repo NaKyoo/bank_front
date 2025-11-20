@@ -35,8 +35,9 @@ const TransferModal = ({ onClose, accounts = [], defaultFrom = null, onSuccess, 
     if (Number.isNaN(amt) || amt <= 0) return setLocalError('Montant invalide.');
 
     try {
-      const res = await send({ from_account: fromAccount, to_account: toAccount.trim(), amount: amt, token });
-      if (onSuccess) onSuccess(res);
+      const payload = { from_account: fromAccount, to_account: toAccount.trim(), amount: amt };
+      const res = await send({ ...payload, token });
+      if (onSuccess) onSuccess({ ...payload, result: res });
       onClose();
     } catch {
       // useTransfer sets the `error` state; we'll show that below

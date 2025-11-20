@@ -2,7 +2,13 @@ import { useState } from "react";
 import { parseDate } from "../utils/parseDate";
 import TransactionsList from "./TransactionsList";
 
-const AccountsList = ({ accounts, onViewDetails, onDelete, onTransfer }) => {
+const AccountsList = ({
+  accounts,
+  onViewDetails,
+  onDelete,
+  onTransfer,
+  refreshKey = 0,
+}) => {
   const [openAccount, setOpenAccount] = useState(null);
 
   const toggleAccount = (accountNumber) => {
@@ -26,9 +32,12 @@ const AccountsList = ({ accounts, onViewDetails, onDelete, onTransfer }) => {
                 backgroundColor: "var(--surface)",
               }}
             >
-              {/* Header de l'accordéon */}
-              <button
+              {/* Header de l'accordéon (use a div to avoid nested button issue) */}
+              <div
                 onClick={() => toggleAccount(acc.account_number)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleAccount(acc.account_number); } }}
                 className="
                   w-full flex justify-between items-center p-4
                   transition-all duration-300 cursor-pointer
@@ -72,6 +81,7 @@ const AccountsList = ({ accounts, onViewDetails, onDelete, onTransfer }) => {
                         px-2 py-1 rounded-md transition-all
                         hover:scale-105 hover:brightness-110 hover:shadow-md
                       "
+                      type="button"
                       style={{
                         backgroundColor: "var(--error)",
                         color: "var(--text-inverse)",
@@ -104,7 +114,7 @@ const AccountsList = ({ accounts, onViewDetails, onDelete, onTransfer }) => {
                     </button>
                   )}
                 </div>
-              </button>
+              </div>
 
               {/* Contenu de l'accordéon */}
               {isOpen && (
@@ -133,7 +143,8 @@ const AccountsList = ({ accounts, onViewDetails, onDelete, onTransfer }) => {
                           }
                           // other actions can be handled by parent if needed
                         }}
-                        className="
+                          type="button"
+                          className="
                           px-4 py-2 rounded-md font-medium text-sm
                           transition-all duration-300 cursor-pointer
                           hover:scale-105 hover:brightness-110 hover:shadow-md
@@ -157,7 +168,10 @@ const AccountsList = ({ accounts, onViewDetails, onDelete, onTransfer }) => {
                   </div>
 
                   {/* Transactions */}
-                  <TransactionsList accountNumber={acc.account_number} />
+                  <TransactionsList
+                    accountNumber={acc.account_number}
+                    refreshKey={refreshKey}
+                  />
                 </div>
               )}
             </div>
