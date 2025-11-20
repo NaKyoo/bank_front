@@ -147,6 +147,12 @@
 .section-header { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:18px; }
 .section-header h2 { margin:0; font-size:20px; font-weight:700; color:var(--text); }
 
+/* Ensure section headers are readable on dark backgrounds (override accidental black-on-black) */
+.accounts-section .section-header h2 {
+  color: var(--text) !important;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.45);
+}
+
 .fab-open-account {
   background: linear-gradient(90deg, var(--accent-pink), var(--accent-pink-600));
   color: var(--bg-900);

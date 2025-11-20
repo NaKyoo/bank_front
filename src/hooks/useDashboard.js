@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getUserInfo, getUserAccounts } from "../api/accountService";
+import { useAuth } from "../context/AuthContext";
 
 /**
  * Hook custom pour gérer la logique du dashboard
@@ -14,6 +15,7 @@ export const useDashboard = (token) => {
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { logout } = useAuth();
 
   // allow manual refetch by exposing `refetch` function
   const fetchDashboardData = async () => {
@@ -34,7 +36,19 @@ export const useDashboard = (token) => {
       setUser(userResponse);
       setAccounts(accountsResponse);
     } catch (err) {
-      setError(err.message);
+      // If the backend returned 401 / unauthorized, log the user out and set a friendly message
+      if (err && err.code === "UNAUTHORIZED") {
+        try {
+          logout();
+        } catch {
+          // ignore
+        }
+        setError("Token expiré. Veuillez vous reconnecter.");
+        setLoading(false);
+        return;
+      }
+
+      setError(err.message || String(err));
     } finally {
       setLoading(false);
     }

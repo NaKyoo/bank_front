@@ -15,8 +15,15 @@ export const getUserInfo = async (token) => {
     },
   });
 
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.message || data.detail || "Erreur lors de la récupération des données utilisateur");
+  // handle 401 explicitly so callers can react (logout / refresh)
+  if (response.status === 401) {
+    const err = new Error("Unauthorized");
+    err.code = "UNAUTHORIZED";
+    throw err;
+  }
+
+  const data = await response.json().catch(() => null);
+  if (!response.ok) throw new Error((data && (data.message || data.detail)) || "Erreur lors de la récupération des données utilisateur");
   return data;
 };
 
@@ -30,8 +37,14 @@ export const getUserAccounts = async (token) => {
     },
   });
 
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.message || data.detail || "Erreur lors de la récupération des comptes");
+  if (response.status === 401) {
+    const err = new Error("Unauthorized");
+    err.code = "UNAUTHORIZED";
+    throw err;
+  }
+
+  const data = await response.json().catch(() => null);
+  if (!response.ok) throw new Error((data && (data.message || data.detail)) || "Erreur lors de la récupération des comptes");
   return data;
 };
 

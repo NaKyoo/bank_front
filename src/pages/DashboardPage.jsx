@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useDashboard } from "../hooks/useDashboard";
 import "../styles/Dashboard.css";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import TransferModal from '../components/modal/TransferModal';
 import AccountCard from '../components/AccountCard';
 
@@ -19,6 +19,14 @@ const Dashboard = () => {
     logout();
     navigate("/login");
   };
+
+  // If dashboard reports token-expired we redirect to login.
+  useEffect(() => {
+    if (error && String(error).toLowerCase().includes('token expir')) {
+      // logout already called in hook, ensure navigation
+      navigate('/login');
+    }
+  }, [error, navigate]);
 
   return (
     <div className="dashboard-container">
