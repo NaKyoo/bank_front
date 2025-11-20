@@ -6,8 +6,8 @@ const DepositModal = ({ accountNumber, onClose, refresh }) => {
     <DepositForm
       accountNumber={accountNumber}
       onSuccess={() => {
-        refresh();     // rafraîchit la liste des comptes
-        onClose();     // ferme le modal
+        refresh();     // rafraîchit la liste des comptes //
+        onClose();     // ferme le modal // 
       }}
     />
   );
