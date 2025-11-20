@@ -15,40 +15,36 @@ export const useDashboard = (token) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // allow manual refetch by exposing `refetch` function
+  const fetchDashboardData = async () => {
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const [userResponse, accountsResponse] = await Promise.all([
+        getUserInfo(token),
+        getUserAccounts(token),
+      ]);
+
+      setUser(userResponse);
+      setAccounts(accountsResponse);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    // Fonction pour charger toutes les données nécessaires
-    const fetchDashboardData = async () => {
-      // Si pas de token, on ne fait rien
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        setError(null);
-
-        // Appels API en parallèle pour plus de performance
-        const [userResponse, accountsResponse] = await Promise.all([
-          getUserInfo(token),
-          getUserAccounts(token),
-        ]);
-
-        // Mise à jour des états avec les données reçues
-        setUser(userResponse);
-        setAccounts(accountsResponse);
-      } catch (err) {
-        // Gestion d'erreur simple
-        setError(err.message);
-      } finally {
-        // Toujours arrêter le loading, succès ou échec
-        setLoading(false);
-      }
-    };
-
     fetchDashboardData();
-  }, [token]); // Se déclenche quand le token change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
-  // Retourne tout ce dont le composant a besoin
-  return { user, accounts, loading, error };
+  // Retourne tout ce dont le composant a besoin et une fonction pour recharger
+  return { user, accounts, loading, error, refetch: fetchDashboardData };
 };

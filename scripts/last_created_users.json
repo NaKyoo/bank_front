@@ -1,0 +1,51 @@
+﻿{
+    "u1":  {
+               "email":  "user.one.1763636674@example.com",
+               "primary":  "ACCA4262C153894",
+               "pwd":  "Test12345!"
+           },
+    "u2":  {
+               "email":  "user.two.1763636675@example.com",
+               "primary":  "ACC58B888FEB440",
+               "pwd":  "Test12345!"
+           },
+    "results":  [
+                    {
+                        "created":  [
+                                        {
+                                            "account":  null,
+                                            "via":  "failed",
+                                            "requested_initial":  38
+                                        },
+                                        {
+                                            "account":  null,
+                                            "via":  "failed",
+                                            "requested_initial":  29
+                                        }
+                                    ],
+                        "primary":  "ACCA4262C153894",
+                        "user":  "user.one.1763636674@example.com"
+                    },
+                    {
+                        "created":  [
+                                        {
+                                            "account":  null,
+                                            "via":  "failed",
+                                            "requested_initial":  14
+                                        },
+                                        {
+                                            "account":  null,
+                                            "via":  "failed",
+                                            "requested_initial":  17
+                                        },
+                                        {
+                                            "account":  null,
+                                            "via":  "failed",
+                                            "requested_initial":  30
+                                        }
+                                    ],
+                        "primary":  "ACC58B888FEB440",
+                        "user":  "user.two.1763636675@example.com"
+                    }
+                ]
+}

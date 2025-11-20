@@ -1,0 +1,24 @@
+﻿[
+    {
+        "account":  "ACCSEC_U2_AUTH_20251120114305591_1",
+        "ok":  true,
+        "resp":  {
+                     "message":  "Le compte ACCSEC_U2_AUTH_20251120114305591_1 a Ã©tÃ© crÃ©Ã© avec succÃ¨s.",
+                     "account_number":  "ACCSEC_U2_AUTH_20251120114305591_1",
+                     "parent_account_number":  "ACC58B888FEB440",
+                     "current_balance":  11320744.14,
+                     "is_active":  true
+                 }
+    },
+    {
+        "account":  "ACCSEC_U2_AUTH_20251120114305825_2",
+        "ok":  true,
+        "resp":  {
+                     "message":  "Le compte ACCSEC_U2_AUTH_20251120114305825_2 a Ã©tÃ© crÃ©Ã© avec succÃ¨s.",
+                     "account_number":  "ACCSEC_U2_AUTH_20251120114305825_2",
+                     "parent_account_number":  "ACC58B888FEB440",
+                     "current_balance":  11611945.54,
+                     "is_active":  true
+                 }
+    }
+]

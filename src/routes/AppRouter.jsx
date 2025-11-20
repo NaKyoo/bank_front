@@ -7,6 +7,7 @@ import SignupPage from "../pages/SignupPage";
 import LoginPage from "../pages/LoginPage";
 import Dashboard from "../pages/DashboardPage";
 import ProfilePage from "../pages/ProfilePage";
+import SendMoneyPage from "../pages/SendMoneyPage";
 
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
@@ -24,11 +25,9 @@ const AppRouter = () => {
 
 const RouterContent = () => {
   const location = useLocation();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
-
     const timer = setTimeout(() => setLoading(false), 800);
     return () => clearTimeout(timer);
   }, [location.pathname]);
@@ -72,6 +71,14 @@ const RouterContent = () => {
           element={
             <PrivateRoute>
               <ProfilePage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/transfer"
+          element={
+            <PrivateRoute>
+              <SendMoneyPage />
             </PrivateRoute>
           }
         />
