@@ -60,27 +60,27 @@ const ProfilePage = () => {
               Mes comptes
             </h2>
 
-            {/* BTN Ouvrir un compte */}
-            <button
-              onClick={() => setOpenModal(true)}
-              className="
-                px-4 py-2 rounded-md font-semibold
-                transition-all duration-300
-                hover:scale-105 hover:brightness-110 hover:shadow-md
-              "
-              style={{
-                backgroundColor: "var(--primary)",
-                color: "var(--text-inverse)",
-                cursor: "pointer",
-              }}
-            >
-              Ouvrir un compte
-            </button>
-          </div>
+            <div className="flex gap-2">
+              {/* Bouton Télécharger le relevé */}
+              <DownloadPdf />
 
-          {/* Bouton Télécharger le relevé */}
-          <div className="mb-4">
-            <DownloadPdf />
+              {/* BTN Ouvrir un compte */}
+              <button
+                onClick={() => setOpenModal(true)}
+                className="
+                  px-4 py-2 rounded-md font-semibold
+                  transition-all duration-300
+                  hover:scale-105 hover:brightness-110 hover:shadow-md
+                "
+                style={{
+                  backgroundColor: "var(--primary)",
+                  color: "var(--text-inverse)",
+                  cursor: "pointer",
+                }}
+              >
+                Ouvrir un compte
+              </button>
+            </div>
           </div>
 
 

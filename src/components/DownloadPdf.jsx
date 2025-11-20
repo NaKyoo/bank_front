@@ -62,17 +62,29 @@ const DownloadPdf = () => {
 
   return (
     <button
-      onClick={generatePDF}
-      style={{
-        backgroundColor: "var(--primary)",
-        padding: "8px 14px",
-        color: "white",
-        borderRadius: "6px",
-        cursor: "pointer",
-        marginBottom: "10px",
-      }}
+        onClick={generatePDF}
+        className="
+            px-4 py-2 rounded-md font-semibold
+            flex items-center justify-center
+            transition-all duration-300
+            hover:scale-105 hover:brightness-110 hover:shadow-md
+        "
+        style={{
+            backgroundColor: "var(--primary)",
+            color: "var(--text-inverse)",
+            cursor: "pointer",
+        }}
     >
-      Télécharger le relevé
+        <svg
+        className="w-6 h-6"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+        >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" />
+        </svg>
     </button>
   );
 };
