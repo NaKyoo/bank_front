@@ -10,9 +10,8 @@ export const useAccounts = () => {
   const fetchAccounts = async () => {
     setLoading(true);
     setError(null);
-
     try {
-      const data = await accountService.getMyAccounts();
+      let data = await accountService.getMyAccounts();
       setAccounts(data);
     } catch (err) {
       setError(err.message || "Erreur lors de la récupération des comptes");
@@ -25,14 +24,11 @@ export const useAccounts = () => {
     fetchAccounts();
   }, []);
 
-
   const closeAccount = async (accountNumber) => {
     setActionLoading(true);
     setError(null);
-
     try {
-      const result = await accountService.closeAccount(accountNumber);
-      return result;
+      return await accountService.closeAccount(accountNumber);
     } catch (err) {
       setError(err.message || "Erreur lors de la clôture du compte");
       throw err;
@@ -44,10 +40,8 @@ export const useAccounts = () => {
   const archiveAccount = async (accountNumber, reason = "Clôture du compte") => {
     setActionLoading(true);
     setError(null);
-
     try {
-      const result = await accountService.archiveAccount(accountNumber, reason);
-      return result;
+      return await accountService.archiveAccount(accountNumber, reason);
     } catch (err) {
       setError(err.message || "Erreur lors de l'archivage du compte");
       throw err;
@@ -59,18 +53,29 @@ export const useAccounts = () => {
   const deleteAccount = async (accountNumber) => {
     setActionLoading(true);
     setError(null);
-
     try {
       await closeAccount(accountNumber);
-
       await archiveAccount(accountNumber, "Clôture manuelle");
-
       await fetchAccounts();
-
       return true;
     } catch (err) {
       setError(err.message);
       return false;
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const openAccount = async (account_number, parent_account_number, initial_balance = 0) => {
+    setActionLoading(true);
+    setError(null);
+    try {
+      const newAccount = await accountService.openAccount({ account_number, parent_account_number, initial_balance });
+      await fetchAccounts();
+      return newAccount;
+    } catch (err) {
+      setError(err.message || "Erreur lors de l'ouverture du compte");
+      throw err;
     } finally {
       setActionLoading(false);
     }
@@ -81,10 +86,10 @@ export const useAccounts = () => {
     loading,
     error,
     actionLoading,
-
     closeAccount,
     archiveAccount,
     deleteAccount,
+    openAccount,
     refresh: fetchAccounts,
   };
 };

@@ -61,4 +61,22 @@ export const accountService = {
 
     return data;
   },
+
+  openAccount: async ({ account_number, parent_account_number, initial_balance = 0 }) => {
+    const token = getAuthToken();
+    const response = await fetch(`/api/accounts/open`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ account_number, parent_account_number, initial_balance }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.detail || "Erreur lors de l'ouverture du compte");
+    }
+    return data;
+  },
 };
