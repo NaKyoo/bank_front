@@ -1,13 +1,28 @@
 import { getAuthToken } from "./authService";
 
-// Service API pour gérer les comptes bancaires
-// Responsabilité unique : communiquer avec le backend
-
+// Helper to resolve token from parameter or from stored auth
 const ensureToken = (token) => token || getAuthToken();
+
+const handleResponse = async (response) => {
+  if (response.status === 401) {
+    const err = new Error("Unauthorized");
+    err.code = "UNAUTHORIZED";
+    throw err;
+  }
+
+  const data = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    const msg = (data && (data.detail || data.message)) || `HTTP ${response.status}`;
+    throw new Error(msg);
+  }
+
+  return data;
+};
 
 export const getUserInfo = async (token) => {
   const t = ensureToken(token);
-  const response = await fetch("/api/users/me", {
+  const response = await fetch(`/api/users/me`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -15,72 +30,67 @@ export const getUserInfo = async (token) => {
     },
   });
 
-  // handle 401 explicitly so callers can react (logout / refresh)
-  if (response.status === 401) {
-    const err = new Error("Unauthorized");
-    err.code = "UNAUTHORIZED";
-    throw err;
-  }
+  return handleResponse(response);
+};
 
-    return data;
-  },
+export const getUserAccounts = async (token) => {
+  const t = ensureToken(token);
+  const response = await fetch(`/api/users/me/accounts`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${t}`,
+    },
+  });
 
-  closeAccount: async (accountNumber) => {
-    const token = getAuthToken();
+  return handleResponse(response);
+};
 
-    const response = await fetch(`api/accounts/${accountNumber}/close`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+export const openAccount = async ({ account_number, parent_account_number = null, initial_balance = 0 }, token) => {
+  const t = ensureToken(token);
+  const response = await fetch(`/api/accounts/open`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${t}`,
+    },
+    body: JSON.stringify({ account_number, parent_account_number, initial_balance }),
+  });
 
-    const data = await response.json();
+  return handleResponse(response);
+};
 
-    if (!response.ok) {
-      throw new Error(data.detail || `Erreur lors de la clôture du compte ${accountNumber}`);
-    }
+export const closeAccount = async (accountNumber, token) => {
+  const t = ensureToken(token);
+  const response = await fetch(`/api/accounts/${accountNumber}/close`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${t}`,
+    },
+  });
 
-    return data;
-  },
+  return handleResponse(response);
+};
 
-  archiveAccount: async (accountNumber, reason = "Clôture du compte") => {
-    const token = getAuthToken();
+export const archiveAccount = async (accountNumber, reason = "Clôture du compte", token) => {
+  const t = ensureToken(token);
+  const response = await fetch(`/api/accounts/${accountNumber}/archive`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${t}`,
+    },
+    body: JSON.stringify({ reason }),
+  });
 
-    const response = await fetch(`api/accounts/${accountNumber}/archive`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ reason }),
-    });
+  return handleResponse(response);
+};
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.detail || `Erreur lors de l'archivage du compte ${accountNumber}`);
-    }
-
-    return data;
-  },
-
-  openAccount: async ({ account_number, parent_account_number, initial_balance = 0 }) => {
-    const token = getAuthToken();
-    const response = await fetch(`/api/accounts/open`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ account_number, parent_account_number, initial_balance }),
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.detail || "Erreur lors de l'ouverture du compte");
-    }
-    return data;
-  },
+export default {
+  getUserInfo,
+  getUserAccounts,
+  openAccount,
+  closeAccount,
+  archiveAccount,
 };
