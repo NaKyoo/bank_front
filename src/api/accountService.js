@@ -22,114 +22,65 @@ export const getUserInfo = async (token) => {
     throw err;
   }
 
-  const data = await response.json().catch(() => null);
-  if (!response.ok) throw new Error((data && (data.message || data.detail)) || "Erreur lors de la récupération des données utilisateur");
-  return data;
-};
+    return data;
+  },
 
-export const getUserAccounts = async (token) => {
-  const t = ensureToken(token);
-  const response = await fetch("/api/users/me/accounts", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${t}`,
-    },
-  });
+  closeAccount: async (accountNumber) => {
+    const token = getAuthToken();
 
-  if (response.status === 401) {
-    const err = new Error("Unauthorized");
-    err.code = "UNAUTHORIZED";
-    throw err;
-  }
+    const response = await fetch(`api/accounts/${accountNumber}/close`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  const data = await response.json().catch(() => null);
-  if (!response.ok) throw new Error((data && (data.message || data.detail)) || "Erreur lors de la récupération des comptes");
-  return data;
-};
+    const data = await response.json();
 
-// Backwards-compatible object export (some hooks/components import `accountService`)
-export const accountService = {
-  getMyAccounts: getUserAccounts,
-  getUserAccounts,
-  getUserInfo,
-};
-
-// Effectuer un transfert entre comptes
-export const transfer = async ({ from_account, to_account, amount, token }) => {
-  const t = token || getAuthToken();
-  const endpoints = [
-    "/transfer",
-    "/api/transfer",
-    "http://127.0.0.1:8000/transfer",
-  ];
-
-  let lastError = null;
-  for (const url of endpoints) {
-    try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${t}`,
-        },
-        body: JSON.stringify({ from_account, to_account, amount }),
-      });
-
-      // Try to parse JSON safely; if parsing fails, use text fallback
-      let data = null;
-      try {
-        const text = await response.text();
-        data = text ? JSON.parse(text) : null;
-      } catch {
-        // invalid or empty JSON
-        if (!response.ok) {
-          const text = await response.text().catch(() => "");
-          throw new Error(`HTTP ${response.status} ${text || response.statusText}`);
-        }
-        throw new Error("Réponse vide ou non-JSON reçue du serveur");
-      }
-
-      if (!response.ok) {
-        throw new Error(data?.message || data?.detail || `Erreur ${response.status}`);
-      }
-
-      return data;
-    } catch (err) {
-      // If 404 or network error, try next endpoint
-      lastError = err;
-      // continue to next URL
+    if (!response.ok) {
+      throw new Error(data.detail || `Erreur lors de la clôture du compte ${accountNumber}`);
     }
-  }
 
-  // If we reach here, all endpoints failed
-  throw lastError || new Error("Erreur lors du transfert (endpoints épuisés)");
-};
+    return data;
+  },
 
-// Récupérer une transaction par account + id
-export const getTransaction = async ({ user_account_number, transaction_id, token }) => {
-  const t = token || getAuthToken();
-  const url = `/transactions/${encodeURIComponent(user_account_number)}/${encodeURIComponent(transaction_id)}`;
-  const response = await fetch(url, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${t}`,
-    },
-  });
+  archiveAccount: async (accountNumber, reason = "Clôture du compte") => {
+    const token = getAuthToken();
 
-  // some endpoints might return empty body on 404 etc — handle safely
-  const text = await response.text().catch(() => "");
-  let data = null;
-  if (text) {
-    try {
-      data = JSON.parse(text);
-    } catch {
-      // non-JSON response
-      if (!response.ok) throw new Error(`HTTP ${response.status} ${text}`);
-      throw new Error("Réponse non-JSON reçue lors de la récupération de la transaction");
+    const response = await fetch(`api/accounts/${accountNumber}/archive`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ reason }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.detail || `Erreur lors de l'archivage du compte ${accountNumber}`);
     }
-  }
-  if (!response.ok) throw new Error(data?.message || data?.detail || `HTTP ${response.status}`);
-  return data;
+
+    return data;
+  },
+
+  openAccount: async ({ account_number, parent_account_number, initial_balance = 0 }) => {
+    const token = getAuthToken();
+    const response = await fetch(`/api/accounts/open`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ account_number, parent_account_number, initial_balance }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.detail || "Erreur lors de l'ouverture du compte");
+    }
+    return data;
+  },
 };
