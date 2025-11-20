@@ -6,6 +6,7 @@ import AccountsList from "../components/AccountsList";
 import Header from "../components/Header";
 import DownloadPdf from "../components/DownloadPdf";
 import TransferModal from "../components/modal/TransferModal";
+import Notification from "../components/Notification";
 
 import OpenAccountModal from "../components/modal/OpenAccountModal";
 import Modal from "../components/modal/Modal";
@@ -17,6 +18,7 @@ const ProfilePage = () => {
   const [openModal, setOpenModal] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
   const [transferSource, setTransferSource] = useState(null);
+  const [notification, setNotification] = useState(null);
 
   const {
     accounts,
@@ -136,7 +138,7 @@ const ProfilePage = () => {
           />
         </Modal>
       
-      {transferOpen && (
+          {transferOpen && (
         <TransferModal
           accounts={accounts}
           defaultFrom={transferSource}
@@ -158,10 +160,27 @@ const ProfilePage = () => {
             await refresh();
             await new Promise((resDelay) => setTimeout(resDelay, 800));
             await refresh();
-          }}
+                // Show notification (customizable colors can be passed from response or use defaults)
+                try {
+                  const msg = (res && (res.message || res.note)) || "Virement effectué";
+                  const bg = (res && res._ui && res._ui.bg) || 'var(--primary)';
+                  const color = (res && res._ui && res._ui.color) || 'var(--text-inverse)';
+                  setNotification({ message: msg, bgColor: bg, textColor: color, duration: 4000 });
+                } catch (e) {}
+              }}
           token={token}
         />
       )}
+
+          {notification && (
+            <Notification
+              message={notification.message}
+              bgColor={notification.bgColor}
+              textColor={notification.textColor}
+              duration={notification.duration}
+              onClose={() => setNotification(null)}
+            />
+          )}
       </div>
     </div>
   );
