@@ -33,7 +33,7 @@ export const useBeneficiaries = (ownerAccountNumber) => {
   }, [auth?.loading, fetchBeneficiaries]);
 
   const addBeneficiary = async (beneficiaryAccountNumber, beneficiaryName = null) => {
-    // Basic client-side validation to avoid calling backend when possible
+    // Validation simple côté client
     setError(null);
     const acct = beneficiaryAccountNumber != null ? String(beneficiaryAccountNumber).trim() : "";
     const name = beneficiaryName != null ? String(beneficiaryName).trim() : null;
@@ -50,14 +50,14 @@ export const useBeneficiaries = (ownerAccountNumber) => {
       throw err;
     }
 
-    // Prevent adding the owner's own account as beneficiary
+    // Empêcher d'ajouter son propre compte
     if (acct === String(ownerAccountNumber)) {
       const err = new Error("Vous ne pouvez pas ajouter votre propre compte comme bénéficiaire");
       setError(err.message);
       throw err;
     }
 
-    // Check existing beneficiaries to avoid duplicate API calls that produce a 500
+    // Éviter doublon local avant appel API
     if (Array.isArray(beneficiaries) && beneficiaries.some((b) => {
       const existing = b && (b.beneficiary_account_number || b.account_number || b);
       return String(existing) === acct;

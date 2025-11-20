@@ -8,7 +8,7 @@ const handleResponse = async (response) => {
     throw err;
   }
 
-    // Read raw text first (works even if body is empty or not JSON)
+    // Lire le texte brut (utile si la réponse n'est pas JSON)
     let text = null;
     try {
       text = await response.text();
@@ -16,7 +16,7 @@ const handleResponse = async (response) => {
       text = null;
     }
 
-    // Try to parse JSON from the text when possible
+    // Tenter de parser le JSON si possible
     let data = null;
     if (text) {
       try {
@@ -30,7 +30,7 @@ const handleResponse = async (response) => {
       const serverMsg = (data && (data.detail || data.message)) || text || `HTTP ${response.status} ${response.statusText}`;
       const err = new Error(serverMsg);
       err.status = response.status;
-      // include both parsed data (if any) and raw text for debugging
+      // Inclure données parsées et texte brut pour debug
       err.response = data || text;
       err.responseText = text;
       console.error("API error:", {
@@ -42,7 +42,7 @@ const handleResponse = async (response) => {
       throw err;
     }
 
-    // On success, prefer parsed JSON but fall back to raw text
+    // En cas de succès, retourner JSON si parsé sinon texte brut
     return data != null ? data : (text || null);
 };
 
@@ -51,7 +51,7 @@ export const getBeneficiaries = async (ownerAccountNumber, token) => {
   const t = ensureToken(token);
   const headers = { "Content-Type": "application/json" };
   if (t) headers.Authorization = `Bearer ${t}`;
-  // Use the same relative `/api` prefix as other services so Vite dev-proxy is consistent
+  // Utiliser le préfixe `/api` (proxy Vite vers backend)
   const url = `/api/accounts/${encodeURIComponent(ownerAccountNumber)}/beneficiaries`;
   const response = await fetch(url, {
     method: "GET",
@@ -89,7 +89,7 @@ export const addBeneficiary = async (
     });
     return handleResponse(response);
   } catch (err) {
-    // rethrow after logging for dev
+    // Log puis relancer
     console.error("addBeneficiary failed", { url, payload, err });
     throw err;
   }

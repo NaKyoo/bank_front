@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Modal from './Modal';
+import BeneficiariesModal from './BeneficiariesModal';
 import { useTransfer } from '../../hooks/useTransfer';
 
 const TransferModal = ({ onClose, accounts = [], defaultFrom = null, onSuccess, token }) => {
@@ -10,6 +11,7 @@ const TransferModal = ({ onClose, accounts = [], defaultFrom = null, onSuccess, 
   const [amount, setAmount] = useState('');
   const [localError, setLocalError] = useState(null);
   const toRef = useRef(null);
+  const [showBeneficiaries, setShowBeneficiaries] = useState(false);
 
   useEffect(() => {
     // focus destinataire pour accélérer l'usage
@@ -65,15 +67,27 @@ const TransferModal = ({ onClose, accounts = [], defaultFrom = null, onSuccess, 
 
           <div className="form-row">
             <label htmlFor="toAccount">Compte destinataire (numéro)</label>
-            <input
-              id="toAccount"
-              ref={toRef}
-              value={toAccount}
-              onChange={(e) => setToAccount(e.target.value)}
-              placeholder="Ex: ACC123456789"
-              inputMode="numeric"
-              aria-required="true"
-            />
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input
+                id="toAccount"
+                ref={toRef}
+                value={toAccount}
+                onChange={(e) => setToAccount(e.target.value)}
+                placeholder="Ex: ACC123456789"
+                inputMode="numeric"
+                aria-required="true"
+                style={{ flex: 1 }}
+              />
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setShowBeneficiaries(true)}
+                disabled={!fromAccount}
+                title={!fromAccount ? 'Sélectionnez un compte source' : 'Ajouter un bénéficiaire'}
+              >
+                Ajouter
+              </button>
+            </div>
           </div>
 
           <div className="form-row">
@@ -99,6 +113,21 @@ const TransferModal = ({ onClose, accounts = [], defaultFrom = null, onSuccess, 
             <button type="submit" className="btn btn-primary" disabled={loading}>{loading ? 'Envoi...' : 'Envoyer'}</button>
           </div>
         </form>
+        {showBeneficiaries && (
+          <BeneficiariesModal
+            isOpen={showBeneficiaries}
+            onClose={() => setShowBeneficiaries(false)}
+            ownerAccountNumber={fromAccount}
+            startAdding={true}
+            onAdded={(acct) => {
+              // fermer modal bénéficiaires et renseigner le champ destinataire
+              setShowBeneficiaries(false);
+              setToAccount(acct);
+              // focus input après insertion
+              if (toRef.current) toRef.current.focus();
+            }}
+          />
+        )}
       </div>
     </Modal>
   );

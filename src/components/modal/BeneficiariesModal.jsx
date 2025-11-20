@@ -4,13 +4,14 @@ import useBeneficiaries from '../../hooks/useBeneficiaries';
 import AddBeneficiaryForm from '../AddBeneficiaryForm';
 import '../../styles/beneficiaries.css';
 
-const BeneficiariesModal = ({ isOpen = true, onClose, ownerAccountNumber }) => {
+const BeneficiariesModal = ({ isOpen = true, onClose, ownerAccountNumber, startAdding = false, onAdded = null }) => {
   const { beneficiaries, loading, error, addBeneficiary, refresh } = useBeneficiaries(ownerAccountNumber);
-  const [isAdding, setIsAdding] = useState(false);
+  const [isAdding, setIsAdding] = useState(() => Boolean(isOpen && startAdding));
 
-  const handleBeneficiaryAdded = async () => {
+  const handleBeneficiaryAdded = async (createdAccountNumber = null) => {
     setIsAdding(false);
     await refresh();
+    if (onAdded && createdAccountNumber) onAdded(createdAccountNumber);
   };
 
   return (

@@ -1,3 +1,15 @@
+Sauvegarde - ajout de bénéficiaire
+
+Fichiers sauvegardés : `src/components/AddBeneficiaryForm.jsx`, `src/hooks/useBeneficiaries.js`, `src/api/beneficiaryService.js`
+
+Instructions de restauration (KISS) :
+- Copier le contenu du fichier de cette sauvegarde dans le fichier d'origine.
+- Supprimer les gardes temporaires côté client si besoin.
+- Redémarrer le frontend si nécessaire : `npm run dev`.
+- Tester l'ajout après restauration.
+
+--- src/components/AddBeneficiaryForm.jsx ---
+
 import React, { useState } from 'react';
 
 const AddBeneficiaryForm = ({ addBeneficiary, onAdded, onCancel }) => {
@@ -13,10 +25,9 @@ const AddBeneficiaryForm = ({ addBeneficiary, onAdded, onCancel }) => {
     setLoading(true);
     try {
       await addBeneficiary(String(accountNumber).trim(), beneficiaryName ? String(beneficiaryName).trim() : null);
-      const created = String(accountNumber).trim();
       setAccountNumber('');
       setBeneficiaryName('');
-      if (onAdded) onAdded(created);
+      if (onAdded) onAdded();
     } catch (err) {
       setError(err?.message || 'Erreur');
     } finally {
@@ -51,3 +62,13 @@ const AddBeneficiaryForm = ({ addBeneficiary, onAdded, onCancel }) => {
 };
 
 export default AddBeneficiaryForm;
+
+--- src/hooks/useBeneficiaries.js ---
+
+(code complet préservé dans le projet : `src/hooks/useBeneficiaries.js`)
+
+--- src/api/beneficiaryService.js ---
+
+(code complet préservé dans le projet : `src/api/beneficiaryService.js`)
+
+--- Fin de la sauvegarde ---
