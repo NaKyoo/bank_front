@@ -2,7 +2,7 @@ import { useState } from "react";
 import { parseDate } from "../utils/parseDate";
 import TransactionsList from "./TransactionsList";
 
-const AccountsList = ({ accounts, onViewDetails, onDelete }) => {
+const AccountsList = ({ accounts, onViewDetails, onDelete, onDeposit }) => {
   const [openAccount, setOpenAccount] = useState(null);
 
   const toggleAccount = (accountNumber) => {
@@ -67,7 +67,7 @@ const AccountsList = ({ accounts, onViewDetails, onDelete }) => {
 
                   {/* Supprimer un compte secondaire */}
                   {acc.parent_account_number && onDelete && (
-                    <button
+                    <svg
                       className="
                         px-2 py-1 rounded-md transition-all
                         hover:scale-105 hover:brightness-110 hover:shadow-md
@@ -101,7 +101,7 @@ const AccountsList = ({ accounts, onViewDetails, onDelete }) => {
                           d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4"
                         />
                       </svg>
-                    </button>
+                    </svg>
                   )}
                 </div>
               </button>
@@ -130,6 +130,10 @@ const AccountsList = ({ accounts, onViewDetails, onDelete }) => {
                           backgroundColor: "var(--primary)",
                           color: "var(--text-inverse)",
                         }}
+                        onClick={() => {
+                          if (label === "Dépôt") 
+                              onDeposit(acc.account_number);
+                          }}
                       >
                         {label}
                       </button>

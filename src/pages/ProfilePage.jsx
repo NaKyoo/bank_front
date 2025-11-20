@@ -6,7 +6,14 @@ import AccountsList from "../components/AccountsList";
 import Header from "../components/Header";
 
 import OpenAccountModal from "../components/modal/OpenAccountModal";
+import DepositModal from "../components/modal/DepositModal";
 import Modal from "../components/modal/Modal";
+
+
+
+
+
+// Page Profil utilisateur //
 
 const ProfilePage = () => {
   const { logout } = useAuth();
@@ -35,6 +42,21 @@ const ProfilePage = () => {
   const closeModal = () => {
     setSelectedAccount(null);
     setOpenModal(false);
+  };
+
+  // Pour le dépôt //
+
+  const [showDepositModal, setShowDepositModal] = useState(false);
+  const [selectedDepositAccount, setSelectedDepositAccount] = useState(null);
+
+  const openDepositModal = (accNumber) => {
+    setSelectedDepositAccount(accNumber);
+    setShowDepositModal(true);
+  };
+
+  const closeDepositModal = () => {
+    setShowDepositModal(false);
+    setSelectedDepositAccount(null);
   };
 
   return (
@@ -89,6 +111,7 @@ const ProfilePage = () => {
                 await deleteAccount(accNum);
                 await refresh();
               }}
+              onDeposit={openDepositModal} // pour le deposit dans profilPage
             />
           )}
 
@@ -122,6 +145,17 @@ const ProfilePage = () => {
             openAccount={openAccount}
             refresh={refresh}
           />
+        </Modal>
+
+        {/* Modal Dépôt */}
+        <Modal isOpen={showDepositModal} onClose={closeDepositModal}>
+          {selectedDepositAccount && (
+            <DepositModal
+              accountNumber={selectedDepositAccount}
+              onClose={closeDepositModal}
+              refresh={refresh}
+            />
+          )}
         </Modal>
       </div>
     </div>
