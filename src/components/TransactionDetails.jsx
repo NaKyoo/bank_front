@@ -3,10 +3,11 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 export default function TransactionDetail() {
-    const { transactionId, userAccountNumber } = useParams();
+    const { userAccountNumber  , transactionId} = useParams();
     const navigate = useNavigate();
     const [ transaction, setTransaction ] = useState(null);
     const [ error, setError ] = useState(null);
+    
 
 
     useEffect(() => {
@@ -37,21 +38,42 @@ export default function TransactionDetail() {
     // affichage dynamique selon l'état de chargement  // 
     if (error) return <div className='error'>{error}</div>
     if(!transaction) return <div>Chargement...</div>
-
     return (
-    <div className="transaction-detail">
-      <h2>Détails de la transaction</h2>
-      <p><strong>Montant :</strong> {transaction.amount} €</p>
-      <p><strong>Date :</strong> {new Date(transaction.date).toLocaleString() // transforme la chaine en un objet date lisible pour tout langue //
-      }</p> 
-      <p><strong>Type :</strong> {transaction.transaction_type}</p>
-      <p><strong>Compte source :</strong> {transaction.source_account_number || "N/A" // affiche N/A si nul // 
-      }</p>
-      <p><strong>Compte destinataire :</strong> {transaction.destination_account_number || "N/A" // affiche N/A si nul // 
-      }</p>
-      <p><strong>Statut :</strong> {transaction.status}</p>
+    <div
+        className="max-w-md mx-auto mt-12 px-6 py-8 rounded-lg shadow-lg"
+        style={{ backgroundColor: 'var(--surface)', color: 'var(--text)' }}
+    >
+        <h2 className="text-2xl font-semibold mb-6 text-center text-[var(--primary-light)]">
+        Détails de la transaction
+        </h2>
 
-      <button onClick={() => navigate("/dashboard")}>Retour au Dashbord</button>
+        <div className="space-y-2 text-sm">
+        <p>
+            <strong>Montant :</strong> {transaction.amount} €
+        </p>
+        <p>
+            <strong>Date :</strong> {new Date(transaction.date).toLocaleString()}
+        </p>
+        <p>
+            <strong>Type :</strong> {transaction.transaction_type}
+        </p>
+        <p>
+            <strong>Compte source :</strong> {transaction.source_account_number || "N/A"}
+        </p>
+        <p>
+            <strong>Compte destinataire :</strong> {transaction.destination_account_number || "N/A"}
+        </p>
+        <p>
+            <strong>Statut :</strong> {transaction.status}
+        </p>
+        </div>
+
+        <button
+        onClick={() => navigate("/profile")}
+        className="mt-6 w-full py-2 rounded-md bg-[var(--primary)] text-[var(--text-inverse)] font-medium transition hover:bg-[var(--primary-dark)]"
+        >
+        Retour au profil
+        </button>
     </div>
     );
 }

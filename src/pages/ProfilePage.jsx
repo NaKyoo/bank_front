@@ -13,6 +13,7 @@ import Modal from "../components/modal/Modal";
 
 
 
+
 // Page Profil utilisateur //
 
 const ProfilePage = () => {
