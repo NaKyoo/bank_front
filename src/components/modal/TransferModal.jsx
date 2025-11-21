@@ -6,16 +6,17 @@ const TransferModal = ({
   onClose,
   accounts = [],
   defaultFrom = null,
+  defaultTo = "",
   onSuccess,
   token,
+  onAddBeneficiaryRequest = null,
 }) => {
   const { send, loading, error } = useTransfer();
 
   const [fromAccount, setFromAccount] = useState(defaultFrom || "");
-  const [toAccount, setToAccount] = useState("");
+  const [toAccount, setToAccount] = useState(defaultTo || "");
   const [amount, setAmount] = useState("");
   const [localError, setLocalError] = useState(null);
-  const [pendingTransaction, setPendingTransaction] = useState(null);
 
   const toRef = useRef(null);
 
@@ -55,11 +56,11 @@ const TransferModal = ({
         amount: amt,
       };
       const res = await send({ ...payload, token });
-  
-      setPendingTransaction(res);
-
       if (onSuccess) onSuccess({ ...payload, result: res });
-    } catch {}
+      onClose();
+    } catch (submitError) {
+      console.error("TransferModal: submit error", submitError);
+    }
   };
 
   return (
@@ -114,7 +115,24 @@ const TransferModal = ({
 
         {/* Compte destinataire */}
         <div className="flex flex-col gap-2">
-          <label style={{ color: "var(--text)" }}>Compte destinataire</label>
+          <div className="flex items-center justify-between">
+            <label style={{ color: "var(--text)" }}>Compte destinataire</label>
+            {onAddBeneficiaryRequest && (
+              <button
+                type="button"
+                onClick={onAddBeneficiaryRequest}
+                className="text-sm font-semibold"
+                style={{
+                  color: "var(--primary)",
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                + Ajouter un bénéficiaire
+              </button>
+            )}
+          </div>
           <input
             ref={toRef}
             value={toAccount}

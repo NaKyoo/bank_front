@@ -27,10 +27,18 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
               }}
             >
               {/* Header de l'accordéon */}
-              <button
+              <div
+                role="button"
+                tabIndex={0}
                 onClick={() => toggleAccount(acc.account_number)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    toggleAccount(acc.account_number);
+                  }
+                }}
                 className="
-                  w-full flex justify-between items-center p-4
+                  w-full flex justify-between items-center p-5
                   transition-all duration-300 cursor-pointer
                   hover:bg-opacity-50 hover:brightness-105
                 "
@@ -68,6 +76,7 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
                   {/* Supprimer un compte secondaire */}
                   {acc.parent_account_number && onDelete && (
                     <button
+                      type="button"
                       className="
                         px-2 py-1 rounded-md transition-all
                         hover:scale-105 hover:brightness-110 hover:shadow-md
@@ -104,12 +113,12 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
                     </button>
                   )}
                 </div>
-              </button>
+              </div>
 
               {/* Contenu de l'accordéon */}
               {isOpen && (
                 <div
-                  className="p-4 border-t space-y-4 transition-all duration-300"
+                  className="p-5 border-t space-y-5 transition-all duration-300"
                   style={{
                     borderColor: "var(--border)",
                     backgroundColor: "var(--surface-light)",
@@ -117,12 +126,12 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
                   }}
                 >
                   {/* ⭐︎ Boutons actions */}
-                  <div className="flex justify-around">
+                  <div className="flex flex-wrap justify-center gap-4">
   
                     {/* ⭐︎ Bouton Dépôt */}
                     <button
                       className="
-                        px-4 py-2 rounded-md font-medium text-sm
+                        px-5 py-3 rounded-md font-semibold text-sm md:text-base
                         transition-all duration-300 cursor-pointer
                         hover:scale-105 hover:brightness-110 hover:shadow-md
                       "
@@ -138,7 +147,7 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
                     {/* ⭐︎ Bouton Virement */}
                     <button
                       className="
-                        px-4 py-2 rounded-md font-medium text-sm
+                        px-5 py-3 rounded-md font-semibold text-sm md:text-base
                         transition-all duration-300 cursor-pointer
                         hover:scale-105 hover:brightness-110 hover:shadow-md
                       "

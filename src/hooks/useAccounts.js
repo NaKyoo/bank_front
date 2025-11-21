@@ -81,6 +81,25 @@ export const useAccounts = () => {
     }
   };
 
+  const applyTransfer = ({ from_account, to_account, amount }) => {
+    const value = Number(amount);
+    if (Number.isNaN(value) || value === 0) return;
+
+    setAccounts((prev) =>
+      prev.map((acc) => {
+        if (acc.account_number === from_account) {
+          const current = Number(acc.balance) || 0;
+          return { ...acc, balance: current - value };
+        }
+        if (acc.account_number === to_account) {
+          const current = Number(acc.balance) || 0;
+          return { ...acc, balance: current + value };
+        }
+        return acc;
+      })
+    );
+  };
+
   return {
     accounts,
     loading,
@@ -90,6 +109,7 @@ export const useAccounts = () => {
     archiveAccount,
     deleteAccount,
     openAccount,
+    applyTransfer,
     refresh: fetchAccounts,
   };
 };

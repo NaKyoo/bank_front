@@ -9,15 +9,18 @@ const Modal = ({ isOpen, onClose, children }) => {
       style={{
         backgroundColor: "rgba(15, 15, 15, 0.6)",
         backdropFilter: "blur(4px)",
+        padding: "1.5rem",
+        overflowY: "auto",
       }}
       onClick={onClose}
     >
       <div
-        className="bg-surface p-6 rounded-xl shadow-xl max-w-md w-full flex flex-col gap-4"
+        className="bg-surface p-6 rounded-xl shadow-xl max-w-2xl w-full flex flex-col gap-4"
         style={{
           borderRadius: "var(--radius-lg)",
           boxShadow: "var(--shadow)",
-          backgroundColor: "var(--surface)"
+          backgroundColor: "var(--surface)",
+          width: "min(640px, 100%)",
         }}
         onClick={(e) => e.stopPropagation()}
       >

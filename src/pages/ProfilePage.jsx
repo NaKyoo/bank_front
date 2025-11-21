@@ -10,6 +10,7 @@ import OpenAccountModal from "../components/modal/OpenAccountModal";
 import Modal from "../components/modal/Modal";
 import DepositModal from "../components/modal/DepositModal";
 import TransferModal from "../components/modal/TransferModal";
+import BeneficiariesModal from "../components/modal/BeneficiariesModal";
 
 
 const ProfilePage = () => {
@@ -17,6 +18,10 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const [transferOpen, setTransferOpen] = useState(false);
   const [transferSource, setTransferSource] = useState(null);
+  const [transferRecipient, setTransferRecipient] = useState("");
+  const [transferModalKey, setTransferModalKey] = useState(0);
+  const [beneficiariesOpen, setBeneficiariesOpen] = useState(false);
+  const [beneficiariesStartAdding, setBeneficiariesStartAdding] = useState(false);
   const [transactionsRefreshKey, setTransactionsRefreshKey] = useState(0);
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [openModal, setOpenModal] = useState(false);
@@ -60,13 +65,63 @@ const ProfilePage = () => {
     setSelectedDepositAccount(null);
   };
 
+  const openTransferWithRecipient = (recipientAccount, preferredSource = null) => {
+    if (!recipientAccount) return;
+    const fallbackSource =
+      preferredSource ||
+      transferSource ||
+      parentAccountNumber ||
+      accounts.find((acc) => acc.is_active)?.account_number ||
+      null;
+
+    if (!fallbackSource) {
+      console.warn("Aucun compte source disponible pour initier le virement");
+      return;
+    }
+
+    setTransferSource(fallbackSource);
+    setTransferRecipient(recipientAccount);
+    setTransferModalKey((prev) => prev + 1);
+    setTransferOpen(true);
+  };
+
+  const openBeneficiariesModal = (startAdding = false) => {
+    setBeneficiariesStartAdding(startAdding);
+    setBeneficiariesOpen(true);
+  };
+
+  const closeBeneficiariesModal = () => {
+    setBeneficiariesOpen(false);
+    setBeneficiariesStartAdding(false);
+  };
+
+  const handleBeneficiaryPick = (accountNumber) => {
+    if (!accountNumber) return;
+    closeBeneficiariesModal();
+    openTransferWithRecipient(accountNumber);
+  };
+
+  const handleBeneficiaryAdded = (accountNumber) => {
+    if (!accountNumber) {
+      closeBeneficiariesModal();
+      return;
+    }
+    closeBeneficiariesModal();
+    openTransferWithRecipient(accountNumber);
+  };
+
+  const handleAddBeneficiaryFromTransfer = () => {
+    setTransferOpen(false);
+    openBeneficiariesModal(true);
+  };
+
   return (
     <div className="min-h-screen bg-background text-text">
       <Header pageTitle="Profil" onLogout={logout} />
 
       <div className="flex items-center justify-center p-6">
         <div
-          className="w-full max-w-3xl p-8 rounded-lg shadow-lg transition-all"
+          className="w-full max-w-5xl p-10 rounded-2xl shadow-lg transition-all"
           style={{
             backgroundColor: "var(--surface)",
             boxShadow: "var(--shadow)",
@@ -85,6 +140,23 @@ const ProfilePage = () => {
             <div className="flex gap-2">
               {/* Bouton Télécharger le relevé */}
               <DownloadPdf />
+
+              {/* Bouton Bénéficiaires */}
+              <button
+                onClick={() => openBeneficiariesModal(false)}
+                className="
+                  px-4 py-2 rounded-md font-semibold
+                  transition-all duration-300
+                  hover:scale-105 hover:brightness-110 hover:shadow-md
+                "
+                style={{
+                  backgroundColor: "var(--primary)",
+                  color: "var(--text-inverse)",
+                  cursor: "pointer",
+                }}
+              >
+                Bénéficiaires
+              </button>
 
               {/* BTN Ouvrir un compte */}
               <button
@@ -122,6 +194,8 @@ const ProfilePage = () => {
               onDeposit={openDepositModal} // pour le deposit dans profilPage
               onTransfer={(accNum) => {
                 setTransferSource(accNum);
+                setTransferRecipient("");
+                setTransferModalKey((prev) => prev + 1);
                 setTransferOpen(true);
               }}
             />
@@ -169,30 +243,37 @@ const ProfilePage = () => {
           )}
         </Modal>
 
-        <Modal isOpen={transferOpen} onClose={() => { 
-            setTransferOpen(false); 
-            setTransferSource(null); 
-        }}>          
-          {transferOpen && (
-          <TransferModal
-            accounts={accounts.filter(acc => acc.is_active)}
-            defaultFrom={transferSource}
-            onClose={() => { setTransferOpen(false); setTransferSource(null); }}
-            onSuccess={async ({ from_account, to_account, amount, result }) => {
-              // Apply optimistic update immediately
-              applyTransfer({ from_account, to_account, amount });
-              
-              // Bump transactions key to trigger re-fetch
-              setTransactionsRefreshKey((prev) => prev + 1);
+        {beneficiariesOpen && (
+          <BeneficiariesModal
+            isOpen={beneficiariesOpen}
+            ownerAccountNumber={parentAccountNumber}
+            startAdding={beneficiariesStartAdding}
+            onClose={closeBeneficiariesModal}
+            onPick={handleBeneficiaryPick}
+            onAdded={handleBeneficiaryAdded}
+          />
+        )}
 
-              // Refresh accounts from backend to sync real balances
+        {transferOpen && (
+          <TransferModal
+            key={`transfer-${transferModalKey}`}
+            accounts={accounts.filter((acc) => acc.is_active)}
+            defaultFrom={transferSource}
+            defaultTo={transferRecipient}
+            onAddBeneficiaryRequest={handleAddBeneficiaryFromTransfer}
+            onClose={() => {
+              setTransferOpen(false);
+              setTransferSource(null);
+              setTransferRecipient("");
+            }}
+            onSuccess={async ({ from_account, to_account, amount }) => {
+              applyTransfer({ from_account, to_account, amount });
+              setTransactionsRefreshKey((prev) => prev + 1);
               await refresh();
-              
             }}
             token={token}
           />
         )}
-        </Modal>
 
       </div>
     </div>
