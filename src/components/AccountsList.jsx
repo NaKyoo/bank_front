@@ -2,7 +2,7 @@ import { useState } from "react";
 import { parseDate } from "../utils/parseDate";
 import TransactionsList from "./TransactionsList";
 
-const AccountsList = ({ accounts, onViewDetails, onDelete }) => {
+const AccountsList = ({ accounts, onDelete, onDeposit }) => {
   const [openAccount, setOpenAccount] = useState(null);
 
   const toggleAccount = (accountNumber) => {
@@ -130,6 +130,10 @@ const AccountsList = ({ accounts, onViewDetails, onDelete }) => {
                           backgroundColor: "var(--primary)",
                           color: "var(--text-inverse)",
                         }}
+                        onClick={() => {
+                          if (label === "Dépôt") 
+                              onDeposit(acc.account_number);
+                          }}
                       >
                         {label}
                       </button>

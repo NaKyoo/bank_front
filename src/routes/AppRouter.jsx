@@ -5,8 +5,7 @@ import { AuthProvider } from "../context/AuthContext";
 
 import SignupPage from "../pages/SignupPage";
 import LoginPage from "../pages/LoginPage";
-import Dashboard from "../pages/DashboardPage";
-import ProfilePage from "../pages/ProfilePage";
+import ProfilePage from "../pages/profilePage";
 
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
@@ -59,14 +58,6 @@ const RouterContent = () => {
         />
 
         {/* Pages privées */}
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute>
-              <Dashboard />
-            </PrivateRoute>
-          }
-        />
         <Route
           path="/profile"
           element={

@@ -8,6 +8,8 @@ import DownloadPdf from "../components/DownloadPdf";
 
 import OpenAccountModal from "../components/modal/OpenAccountModal";
 import Modal from "../components/modal/Modal";
+import DepositModal from "../components/modal/DepositModal";
+
 
 const ProfilePage = () => {
   const { logout } = useAuth();
@@ -36,6 +38,21 @@ const ProfilePage = () => {
   const closeModal = () => {
     setSelectedAccount(null);
     setOpenModal(false);
+  };
+
+  // Pour le dépôt //
+
+  const [showDepositModal, setShowDepositModal] = useState(false);
+  const [selectedDepositAccount, setSelectedDepositAccount] = useState(null);
+
+  const openDepositModal = (accNumber) => {
+    setSelectedDepositAccount(accNumber);
+    setShowDepositModal(true);
+  };
+
+  const closeDepositModal = () => {
+    setShowDepositModal(false);
+    setSelectedDepositAccount(null);
   };
 
   return (
@@ -91,11 +108,11 @@ const ProfilePage = () => {
           {!loading && !error && accounts.length > 0 && (
             <AccountsList
               accounts={accounts}
-              onViewDetails={setSelectedAccount}
               onDelete={async (accNum) => {
                 await deleteAccount(accNum);
                 await refresh();
               }}
+              onDeposit={openDepositModal} // pour le deposit dans profilPage
             />
           )}
 
@@ -129,6 +146,16 @@ const ProfilePage = () => {
             openAccount={openAccount}
             refresh={refresh}
           />
+        </Modal>
+
+         <Modal isOpen={showDepositModal} onClose={closeDepositModal}>
+          {selectedDepositAccount && (
+            <DepositModal
+              accountNumber={selectedDepositAccount}
+              onClose={closeDepositModal}
+              refresh={refresh}
+            />
+          )}
         </Modal>
       </div>
     </div>
