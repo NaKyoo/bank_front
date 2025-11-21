@@ -1,7 +1,10 @@
 import { useTransactions } from "../hooks/useTransactions";
+import { useNavigate } from "react-router-dom";
 
 const TransactionsList = ({ accountNumber }) => {
   const { transactions, loading, error } = useTransactions(accountNumber);
+  const navigate = useNavigate();
+
 
   const formatType = (type) => {
     switch (type) {
@@ -61,6 +64,20 @@ const TransactionsList = ({ accountNumber }) => {
               </td>
               <td className="px-3 py-2" style={{ borderBottom: `1px solid var(--border)` }}>
                 {txn.destination_account_number || "—"}
+              </td>
+              <td className="px-3 py-2">
+                  <button
+                    onClick={() => navigate(`/transactions/${accountNumber}/${txn.id}`)}
+                    className="
+                      ml-4 px-4 py-2 rounded-md font-semibold
+                      bg-[var(--primary)] text-[var(--text-inverse)]
+                      transition-all duration-300
+                      hover:scale-105 hover:brightness-110 hover:shadow-md
+                      disabled:opacity-60 disabled:cursor-not-allowed
+                    "
+                  >
+                    Voir détails
+                  </button>
               </td>
             </tr>
           ))}
