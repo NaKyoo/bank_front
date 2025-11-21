@@ -150,22 +150,6 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
                     >
                       Virement
                     </button>
-
-                    {/* ⭐︎ Bouton Historique */}
-                    <button
-                      className="
-                        px-4 py-2 rounded-md font-medium text-sm
-                        transition-all duration-300 cursor-pointer
-                        hover:scale-105 hover:brightness-110 hover:shadow-md
-                      "
-                      style={{
-                        backgroundColor: "var(--primary)",
-                        color: "var(--text-inverse)",
-                      }}
-                    >
-                      Historique
-                    </button>
-
                   </div>
 
 

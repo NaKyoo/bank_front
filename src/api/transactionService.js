@@ -38,6 +38,14 @@ export const getAllTransactions = async (token) => {
 };
 
 
+const handleResponse = async (response) => {
+  const data = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new Error((data && (data.detail || data.message)) || `HTTP ${response.status}`);
+  }
+  return data;
+};
+
 export const transfer = async ({ from_account, to_account, amount, token }) => {
   const response = await fetch(`/api/transfer`, {
     method: "POST",

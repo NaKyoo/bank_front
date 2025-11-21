@@ -15,6 +15,8 @@ const TransferModal = ({
   const [toAccount, setToAccount] = useState("");
   const [amount, setAmount] = useState("");
   const [localError, setLocalError] = useState(null);
+  const [pendingTransaction, setPendingTransaction] = useState(null);
+
   const toRef = useRef(null);
 
   useEffect(() => {
@@ -53,8 +55,10 @@ const TransferModal = ({
         amount: amt,
       };
       const res = await send({ ...payload, token });
+  
+      setPendingTransaction(res);
+
       if (onSuccess) onSuccess({ ...payload, result: res });
-      onClose();
     } catch {}
   };
 
