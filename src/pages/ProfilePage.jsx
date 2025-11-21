@@ -9,11 +9,15 @@ import DownloadPdf from "../components/DownloadPdf";
 import OpenAccountModal from "../components/modal/OpenAccountModal";
 import Modal from "../components/modal/Modal";
 import DepositModal from "../components/modal/DepositModal";
+import TransferModal from "../components/modal/TransferModal";
 
 
 const ProfilePage = () => {
-  const { logout } = useAuth();
+  const { logout, token } = useAuth();
   const navigate = useNavigate();
+  const [transferOpen, setTransferOpen] = useState(false);
+  const [transferSource, setTransferSource] = useState(null);
+  const [transactionsRefreshKey, setTransactionsRefreshKey] = useState(0);
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [openModal, setOpenModal] = useState(false);
 
@@ -22,6 +26,7 @@ const ProfilePage = () => {
     loading,
     error,
     openAccount,
+    applyTransfer,
     refresh,
     deleteAccount,
   } = useAccounts();
@@ -108,11 +113,17 @@ const ProfilePage = () => {
           {!loading && !error && accounts.length > 0 && (
             <AccountsList
               accounts={accounts}
+              refreshKey={transactionsRefreshKey}
               onDelete={async (accNum) => {
                 await deleteAccount(accNum);
                 await refresh();
+                setTransactionsRefreshKey((prev) => prev + 1);
               }}
               onDeposit={openDepositModal} // pour le deposit dans profilPage
+              onTransfer={(accNum) => {
+                setTransferSource(accNum);
+                setTransferOpen(true);
+              }}
             />
           )}
 
@@ -157,6 +168,32 @@ const ProfilePage = () => {
             />
           )}
         </Modal>
+
+        <Modal isOpen={transferOpen} onClose={() => { 
+            setTransferOpen(false); 
+            setTransferSource(null); 
+        }}>          
+          {transferOpen && (
+          <TransferModal
+            accounts={accounts.filter(acc => acc.is_active)}
+            defaultFrom={transferSource}
+            onClose={() => { setTransferOpen(false); setTransferSource(null); }}
+            onSuccess={async ({ from_account, to_account, amount, result }) => {
+              // Apply optimistic update immediately
+              applyTransfer({ from_account, to_account, amount });
+              
+              // Bump transactions key to trigger re-fetch
+              setTransactionsRefreshKey((prev) => prev + 1);
+
+              // Refresh accounts from backend to sync real balances
+              await refresh();
+              
+            }}
+            token={token}
+          />
+        )}
+        </Modal>
+
       </div>
     </div>
   );

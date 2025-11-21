@@ -36,3 +36,30 @@ export const getAllTransactions = async (token) => {
 
   return Array.isArray(data) ? data : [];
 };
+
+
+export const transfer = async ({ from_account, to_account, amount, token }) => {
+  const response = await fetch(`/api/transfer`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({ from_account, to_account, amount }),
+  });
+
+  return handleResponse(response);
+};
+
+export const getTransaction = async ({ user_account_number, transaction_id, token }) => {
+  if (!user_account_number || !transaction_id) throw new Error("Paramètres manquants pour getTransaction");
+  const response = await fetch(`/api/transactions/${user_account_number}/${transaction_id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  return handleResponse(response);
+};

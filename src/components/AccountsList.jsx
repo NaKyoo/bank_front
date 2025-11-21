@@ -2,7 +2,7 @@ import { useState } from "react";
 import { parseDate } from "../utils/parseDate";
 import TransactionsList from "./TransactionsList";
 
-const AccountsList = ({ accounts, onDelete, onDeposit }) => {
+const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
   const [openAccount, setOpenAccount] = useState(null);
 
   const toggleAccount = (accountNumber) => {
@@ -118,27 +118,56 @@ const AccountsList = ({ accounts, onDelete, onDeposit }) => {
                 >
                   {/* ⭐︎ Boutons actions */}
                   <div className="flex justify-around">
-                    {["Dépôt", "Virement", "Historique"].map((label) => (
-                      <button
-                        key={label}
-                        className="
-                          px-4 py-2 rounded-md font-medium text-sm
-                          transition-all duration-300 cursor-pointer
-                          hover:scale-105 hover:brightness-110 hover:shadow-md
-                        "
-                        style={{
-                          backgroundColor: "var(--primary)",
-                          color: "var(--text-inverse)",
-                        }}
-                        onClick={() => {
-                          if (label === "Dépôt") 
-                              onDeposit(acc.account_number);
-                          }}
-                      >
-                        {label}
-                      </button>
-                    ))}
+  
+                    {/* ⭐︎ Bouton Dépôt */}
+                    <button
+                      className="
+                        px-4 py-2 rounded-md font-medium text-sm
+                        transition-all duration-300 cursor-pointer
+                        hover:scale-105 hover:brightness-110 hover:shadow-md
+                      "
+                      style={{
+                        backgroundColor: "var(--primary)",
+                        color: "var(--text-inverse)",
+                      }}
+                      onClick={() => onDeposit(acc.account_number)}
+                    >
+                      Dépôt
+                    </button>
+
+                    {/* ⭐︎ Bouton Virement */}
+                    <button
+                      className="
+                        px-4 py-2 rounded-md font-medium text-sm
+                        transition-all duration-300 cursor-pointer
+                        hover:scale-105 hover:brightness-110 hover:shadow-md
+                      "
+                      style={{
+                        backgroundColor: "var(--primary)",
+                        color: "var(--text-inverse)",
+                      }}
+                      onClick={() => onTransfer && onTransfer(acc.account_number)}
+                    >
+                      Virement
+                    </button>
+
+                    {/* ⭐︎ Bouton Historique */}
+                    <button
+                      className="
+                        px-4 py-2 rounded-md font-medium text-sm
+                        transition-all duration-300 cursor-pointer
+                        hover:scale-105 hover:brightness-110 hover:shadow-md
+                      "
+                      style={{
+                        backgroundColor: "var(--primary)",
+                        color: "var(--text-inverse)",
+                      }}
+                    >
+                      Historique
+                    </button>
+
                   </div>
+
 
                   {/* Infos création */}
                   <div className="flex justify-between items-center">
