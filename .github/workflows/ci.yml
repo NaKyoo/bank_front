@@ -14,15 +14,15 @@ jobs:
     steps:
       # Étape 1 : Récupération du code source
       # utilise l'action officielle checkout pour cloner le dépôt dans la VM
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout code   
+        uses: actions/checkout@v5
 
       # Étape 2 : Configuration de l'environnement Node.js
-      # Installe Node.js version 20 pour exécuter les commandes npm
+      # Installe Node.js version 22 pour exécuter les commandes npm
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: '20' # Version LTS récente de Node.js
+          node-version: '22' # Version LTS récente de Node.js
 
       # Étape 3 : Installation des dépendances
       # "npm ci" est recommandé pour les environnements d'intégration continue (plus rapide et propre que npm install)
