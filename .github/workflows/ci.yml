@@ -1,0 +1,35 @@
+# Nom du workflow qui apparaîtra dans l'onglet "Actions" de GitHub
+name: CI Front Project
+
+# Définition des événements qui déclenchent le workflow
+# Ici, le workflow se lance à chaque "push" sur n'importe quelle branche
+on: [push]
+
+jobs:
+  # Définition du job "build-frontend"
+  build-frontend:
+    # Le job s'exécutera sur une machine virtuelle Ubuntu (la dernière version disponible)
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Étape 1 : Récupération du code source
+      # utilise l'action officielle checkout pour cloner le dépôt dans la VM
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Étape 2 : Configuration de l'environnement Node.js
+      # Installe Node.js version 20 pour exécuter les commandes npm
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Version LTS récente de Node.js
+
+      # Étape 3 : Installation des dépendances
+      # "npm ci" est recommandé pour les environnements d'intégration continue (plus rapide et propre que npm install)
+      - name: Install dependencies
+        run: npm ci 
+
+      # Étape 4 : Construction du projet
+      # Compile le projet React (Vite). Si cette commande échoue, le workflow sera marqué comme échoué (Rouge).
+      - name: Build project
+        run: npm run build
