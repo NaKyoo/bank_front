@@ -38,12 +38,15 @@ const DownloadPdf = () => {
     y += 7;
 
     transactions.forEach((t) => {
-      const type =
-        t.transaction_type === "deposit"
-          ? "Crédit"
-          : t.transaction_type === "transfer"
-          ? "Débit"
-          : t.transaction_type;
+      let type; 
+
+      if (t.transaction_type === "deposit") {
+        type = "Crédit";
+      } else if (t.transaction_type === "transfer") {
+        type = "Débit";
+      } else {
+        type = t.transaction_type;
+      }
 
       doc.text(new Date(t.date).toLocaleString(), colX.date, y);
       doc.text(type, colX.type, y);
