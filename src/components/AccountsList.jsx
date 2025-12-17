@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { parseDate } from "../utils/parseDate";
 import TransactionsList from "./TransactionsList";
+import PropTypes from "prop-types";
 
 const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
   const [openAccount, setOpenAccount] = useState(null);
@@ -179,6 +180,13 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
         })}
     </div>
   );
+};
+
+AccountsList.propTypes = {
+  accounts: PropTypes.array.isRequired,
+  onDelete: PropTypes.func,
+  onDeposit: PropTypes.func.isRequired,
+  onTransfer: PropTypes.func,
 };
 
 export default AccountsList;
