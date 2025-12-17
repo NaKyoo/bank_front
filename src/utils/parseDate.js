@@ -14,7 +14,7 @@ export const parseDate = (dateStr) => {
   const cleaned = dateStr.replace(/\.(\d{3})\d*/, '.$1').replace(" ", "T");
 
   const date = new Date(cleaned);
-  if (isNaN(date.getTime())) return "—";
+  if (Number.isNaN(date.getTime())) return "—";
 
   return date.toLocaleDateString("fr-FR", {
     day: "2-digit",

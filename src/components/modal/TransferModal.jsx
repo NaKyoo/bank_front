@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import Modal from "./Modal";
 import { useTransfer } from "../../hooks/useTransfer";
+import PropTypes from "prop-types";
 
 const TransferModal = ({
   onClose,
@@ -30,7 +31,7 @@ const TransferModal = ({
     const num =
       typeof rawBal === "number"
         ? rawBal
-        : parseFloat(String(rawBal).replace(",", ".")) || 0;
+        : Number.parseFloat(String(rawBal).replace(",", ".")) || 0;
     const formatted =
       new Intl.NumberFormat(undefined, {
         minimumFractionDigits: 0,
@@ -46,7 +47,7 @@ const TransferModal = ({
 
     if (!fromAccount) return setLocalError("Choisissez un compte source.");
     if (!toAccount.trim()) return setLocalError("Numéro destinataire invalide.");
-    const amt = parseFloat(amount);
+    const amt = Number.parseFloat(amount);
     if (Number.isNaN(amt) || amt <= 0) return setLocalError("Montant invalide.");
 
     try {
@@ -198,6 +199,22 @@ const TransferModal = ({
       </div>
     </Modal>
   );
+};
+
+TransferModal.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  accounts: PropTypes.arrayOf(
+    PropTypes.shape({
+      account_number: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      balance: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      is_active: PropTypes.bool,
+    })
+  ),
+  defaultFrom: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  defaultTo: PropTypes.string,
+  onSuccess: PropTypes.func.isRequired,
+  token: PropTypes.string.isRequired,
+  onAddBeneficiaryRequest: PropTypes.func,
 };
 
 export default TransferModal;

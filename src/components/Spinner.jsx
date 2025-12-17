@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 
 const Spinner = ({ show }) => {
   const [visible, setVisible] = useState(show);
@@ -62,6 +63,10 @@ const Spinner = ({ show }) => {
       </div>
     </div>
   );
+};
+
+Spinner.propTypes = {
+  show: PropTypes.bool.isRequired,
 };
 
 export default React.memo(Spinner);
