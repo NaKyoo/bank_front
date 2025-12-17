@@ -45,7 +45,7 @@ export const useBeneficiaries = (ownerAccountNumber) => {
     const accountValue = beneficiaryAccountNumber
       ? String(beneficiaryAccountNumber).trim()
       : "";
-    const nameValue = beneficiaryName != null ? beneficiaryName.trim() : null;
+    const nameValue = beneficiaryName ? beneficiaryName.trim() : null;
 
     if (!accountValue) {
       const err = new Error("Numéro du compte bénéficiaire manquant");

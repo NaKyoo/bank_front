@@ -89,7 +89,7 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
                       }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        const confirmed = window.confirm(
+                        const confirmed = globalThis.confirm(
                           `Êtes-vous sûr de vouloir supprimer le compte ${acc.account_number} ?`
                         );
                         if (confirmed) {
@@ -156,7 +156,7 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
                         backgroundColor: "var(--primary)",
                         color: "var(--text-inverse)",
                       }}
-                      onClick={() => onTransfer && onTransfer(acc.account_number)}
+                      onClick={() => onTransfer?.(acc.account_number)}
                     >
                       Virement
                     </button>
