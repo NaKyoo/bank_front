@@ -110,7 +110,7 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
                           d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4"
                         />
                       </svg>
-                    </svg>
+                    </button>
                   )}
                 </div>
               </div>

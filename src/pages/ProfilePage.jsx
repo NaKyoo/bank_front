@@ -51,6 +51,71 @@ const ProfilePage = () => {
     setOpenModal(false);
   };
 
+  // Pour le dépôt //
+
+  const [showDepositModal, setShowDepositModal] = useState(false);
+  const [selectedDepositAccount, setSelectedDepositAccount] = useState(null);
+
+  const openDepositModal = (accNumber) => {
+    setSelectedDepositAccount(accNumber);
+    setShowDepositModal(true);
+  };
+
+  const closeDepositModal = () => {
+    setShowDepositModal(false);
+    setSelectedDepositAccount(null);
+  };
+
+  const openTransferWithRecipient = (recipientAccount, preferredSource = null) => {
+    if (!recipientAccount) return;
+    const fallbackSource =
+      preferredSource ||
+      transferSource ||
+      parentAccountNumber ||
+      accounts.find((acc) => acc.is_active)?.account_number ||
+      null;
+
+    if (!fallbackSource) {
+      console.warn("Aucun compte source disponible pour initier le virement");
+      return;
+    }
+
+    setTransferSource(fallbackSource);
+    setTransferRecipient(recipientAccount);
+    setTransferModalKey((prev) => prev + 1);
+    setTransferOpen(true);
+  };
+
+  const openBeneficiariesModal = (startAdding = false) => {
+    setBeneficiariesStartAdding(startAdding);
+    setBeneficiariesOpen(true);
+  };
+
+  const closeBeneficiariesModal = () => {
+    setBeneficiariesOpen(false);
+    setBeneficiariesStartAdding(false);
+  };
+
+  const handleBeneficiaryPick = (accountNumber) => {
+    if (!accountNumber) return;
+    closeBeneficiariesModal();
+    openTransferWithRecipient(accountNumber);
+  };
+
+  const handleBeneficiaryAdded = (accountNumber) => {
+    if (!accountNumber) {
+      closeBeneficiariesModal();
+      return;
+    }
+    closeBeneficiariesModal();
+    openTransferWithRecipient(accountNumber);
+  };
+
+  const handleAddBeneficiaryFromTransfer = () => {
+    setTransferOpen(false);
+    openBeneficiariesModal(true);
+  };
+
   return (
     <div className="min-h-screen bg-background text-text">
       <Header pageTitle="Profil" onLogout={logout} />
@@ -134,7 +199,6 @@ const ProfilePage = () => {
                 setTransferModalKey((prev) => prev + 1);
                 setTransferOpen(true);
               }}
-              onDeposit={openDepositModal} // pour le deposit dans profilPage
             />
           )}
 
@@ -169,6 +233,49 @@ const ProfilePage = () => {
             refresh={refresh}
           />
         </Modal>
+
+         <Modal isOpen={showDepositModal} onClose={closeDepositModal}>
+          {selectedDepositAccount && (
+            <DepositModal
+              accountNumber={selectedDepositAccount}
+              onClose={closeDepositModal}
+              refresh={refresh}
+            />
+          )}
+        </Modal>
+
+        {beneficiariesOpen && (
+          <BeneficiariesModal
+            isOpen={beneficiariesOpen}
+            ownerAccountNumber={parentAccountNumber}
+            startAdding={beneficiariesStartAdding}
+            onClose={closeBeneficiariesModal}
+            onPick={handleBeneficiaryPick}
+            onAdded={handleBeneficiaryAdded}
+          />
+        )}
+
+        {transferOpen && (
+          <TransferModal
+            key={`transfer-${transferModalKey}`}
+            accounts={accounts.filter((acc) => acc.is_active)}
+            defaultFrom={transferSource}
+            defaultTo={transferRecipient}
+            onAddBeneficiaryRequest={handleAddBeneficiaryFromTransfer}
+            onClose={() => {
+              setTransferOpen(false);
+              setTransferSource(null);
+              setTransferRecipient("");
+            }}
+            onSuccess={async ({ from_account, to_account, amount }) => {
+              applyTransfer({ from_account, to_account, amount });
+              setTransactionsRefreshKey((prev) => prev + 1);
+              await refresh();
+            }}
+            token={token}
+          />
+        )}
+
       </div>
     </div>
   );
