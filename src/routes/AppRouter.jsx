@@ -8,13 +8,12 @@ import LoginPage from "../pages/LoginPage";
 import ProfilePage from "../pages/ProfilePage";
 import TransactionDetailsPage from "../pages/TransactionDetailsPage.jsx";
 
-
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 import Spinner from "../components/Spinner";
 
 import DepositForm from "../components/DepositForm.jsx"; // modifier 
-import TransactionDetailsPage from "../pages/TransactionDetailsPage.jsx";
+
 
 const AppRouter = () => {
   return (
