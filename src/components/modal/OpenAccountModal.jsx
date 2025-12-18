@@ -39,7 +39,24 @@ const OpenAccountModal = ({ parentAccountNumber, onClose, openAccount, refresh }
         Ouvrir un compte secondaire
       </h3>
 
-      {apiError && <p style={{ color: "var(--error)" }}>{apiError}</p>}
+      {apiError && (
+        <div
+          className="p-3 rounded-md"
+          style={{
+            backgroundColor: "rgba(239, 68, 68, 0.1)",
+            border: "1px solid var(--error)",
+            color: "var(--error)"
+          }}
+        >
+          <p className="font-semibold">❌ Erreur</p>
+          <p className="text-sm mt-1">{apiError}</p>
+          {apiError.includes("plus de 5 comptes") && (
+            <p className="text-xs mt-2" style={{ color: "var(--text-muted)" }}>
+              💡 Astuce : Certains comptes peuvent être masqués. Contactez l'administrateur pour nettoyer les comptes inactifs.
+            </p>
+          )}
+        </div>
+      )}
 
       <input
         type="text"
