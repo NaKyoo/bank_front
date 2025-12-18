@@ -1,7 +1,10 @@
+import { API_URL } from "./config"; 
+
+
 export const getTransactions = async (accountNumber, token) => {
   if (!accountNumber) throw new Error("Numéro de compte manquant");
 
-  const response = await fetch(`/api/accounts/${accountNumber}/transactions`, {
+  const response = await fetch(`${API_URL}/accounts/${accountNumber}/transactions`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

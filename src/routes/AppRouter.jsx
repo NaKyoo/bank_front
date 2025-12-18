@@ -5,7 +5,7 @@ import { AuthProvider } from "../context/AuthContext";
 
 import SignupPage from "../pages/SignupPage";
 import LoginPage from "../pages/LoginPage";
-import Dashboard from "../pages/DashboardPage";
+import Dashboard from "../pages/DashBoardPage";
 import ProfilePage from "../pages/ProfilePage";
 
 import PrivateRoute from "./PrivateRoute";
