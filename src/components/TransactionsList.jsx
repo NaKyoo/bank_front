@@ -1,11 +1,8 @@
 import { useTransactions } from "../hooks/useTransactions";
-import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
 const TransactionsList = ({ accountNumber }) => {
-  const navigate = useNavigate();
   const { transactions, loading, error } = useTransactions(accountNumber);
-
 
   const formatType = (type) => {
     switch (type) {

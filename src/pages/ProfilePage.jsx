@@ -7,14 +7,13 @@ import Header from "../components/Header";
 import DownloadPdf from "../components/DownloadPdf";
 
 import OpenAccountModal from "../components/modal/OpenAccountModal";
-import DepositModal from "../components/modal/DepositModal";
 import Modal from "../components/modal/Modal";
+import DepositModal from "../components/modal/DepositModal";
 import TransferModal from "../components/modal/TransferModal";
 import BeneficiariesModal from "../components/modal/BeneficiariesModal";
 
-
 const ProfilePage = () => {
-  const { logout, token } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
   const [transferOpen, setTransferOpen] = useState(false);
   const [transferSource, setTransferSource] = useState(null);
@@ -26,12 +25,15 @@ const ProfilePage = () => {
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [openModal, setOpenModal] = useState(false);
 
+  // Pour le dépôt //
+  const [showDepositModal, setShowDepositModal] = useState(false);
+  const [selectedDepositAccount, setSelectedDepositAccount] = useState(null);
+
   const {
     accounts,
     loading,
     error,
     openAccount,
-    applyTransfer,
     refresh,
     deleteAccount,
   } = useAccounts();
@@ -48,6 +50,26 @@ const ProfilePage = () => {
   const closeModal = () => {
     setSelectedAccount(null);
     setOpenModal(false);
+  };
+
+  const openDepositModal = (accountNumber) => {
+    setSelectedDepositAccount(accountNumber);
+    setShowDepositModal(true);
+  };
+
+  const closeDepositModal = () => {
+    setShowDepositModal(false);
+    setSelectedDepositAccount(null);
+  };
+
+  const openBeneficiariesModal = (startAdding = false) => {
+    setBeneficiariesStartAdding(startAdding);
+    setBeneficiariesOpen(true);
+  };
+
+  const closeBeneficiariesModal = () => {
+    setBeneficiariesOpen(false);
+    setBeneficiariesStartAdding(false);
   };
 
   return (
@@ -165,6 +187,37 @@ const ProfilePage = () => {
             onClose={closeModal}
             openAccount={openAccount}
             refresh={refresh}
+          />
+        </Modal>
+
+        {/* Modal Dépôt */}
+        <Modal isOpen={showDepositModal} onClose={closeDepositModal}>
+          <DepositModal
+            accountNumber={selectedDepositAccount}
+            onClose={closeDepositModal}
+            refresh={refresh}
+          />
+        </Modal>
+
+        {/* Modal Virement */}
+        <Modal isOpen={transferOpen} onClose={() => setTransferOpen(false)}>
+          <TransferModal
+            key={transferModalKey}
+            sourceAccount={transferSource}
+            initialRecipient={transferRecipient}
+            onClose={() => setTransferOpen(false)}
+            onSuccess={() => {
+              refresh();
+              setTransactionsRefreshKey((prev) => prev + 1);
+            }}
+          />
+        </Modal>
+
+        {/* Modal Bénéficiaires */}
+        <Modal isOpen={beneficiariesOpen} onClose={closeBeneficiariesModal}>
+          <BeneficiariesModal
+            onClose={closeBeneficiariesModal}
+            startAdding={beneficiariesStartAdding}
           />
         </Modal>
       </div>

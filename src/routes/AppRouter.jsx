@@ -12,7 +12,8 @@ import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 import Spinner from "../components/Spinner";
 
-import DepositForm from "../components/DepositForm.jsx";
+import DepositForm from "../components/DepositForm.jsx"; // modifier 
+
 
 const AppRouter = () => {
   return (
