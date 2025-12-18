@@ -1,35 +1,126 @@
-# Nom du workflow qui apparaîtra dans l'onglet "Actions" de GitHub
-name: CI Front Project
+# ============================================================================
+# CI Frontend - Pipeline d'Intégration Continue Complète
+# ============================================================================
+# 
+# Description:
+#   Ce workflow GitHub Actions exécute automatiquement le build et les tests
+#   unitaires du projet frontend React/Vite à chaque push sur n'importe
+#   quelle branche. En cas d'échec, une issue GitHub est créée automatiquement
+#   avec tous les détails nécessaires pour le débogage.
+#
+# Auteur: DevOps Team
+# Date de création: 2025-12-18
+# Version: 2.0.0 (Fusion de ci.yml et ci-frontend.yml)
+# ============================================================================
 
-# Définition des événements qui déclenchent le workflow
-# Ici, le workflow se lance à chaque "push" sur n'importe quelle branche
+name: CI Frontend - Build & Tests
+
+# ----------------------------------------------------------------------------
+# Configuration des Déclencheurs (Triggers)
+# ----------------------------------------------------------------------------
+# Le workflow se déclenche automatiquement lors d'un push sur n'importe
+# quelle branche pour garantir la qualité du code en continu
 on: [push]
 
+# ----------------------------------------------------------------------------
+# Définition des Jobs
+# ----------------------------------------------------------------------------
 jobs:
-  # Définition du job "build-frontend"
-  build-frontend:
-    # Le job s'exécutera sur une machine virtuelle Ubuntu (la dernière version disponible)
+  # Job principal: build-and-test
+  # Exécute le build et les tests unitaires dans un environnement Ubuntu
+  build-and-test:
     runs-on: ubuntu-latest
     
     steps:
-      # Étape 1 : Récupération du code source
-      # utilise l'action officielle checkout pour cloner le dépôt dans la VM
-      - name: Checkout code   
+      # ======================================================================
+      # Étape 1: Récupération du Code Source
+      # ======================================================================
+      # Utilise l'action officielle checkout@v5 pour cloner le dépôt
+      # dans l'environnement d'exécution GitHub Actions
+      - name: Checkout code
         uses: actions/checkout@v5
 
-      # Étape 2 : Configuration de l'environnement Node.js
-      # Installe Node.js version 22 pour exécuter les commandes npm
-      - name: Set up Node.js
+      # ======================================================================
+      # Étape 2: Configuration de l'Environnement Node.js
+      # ======================================================================
+      # Installe Node.js version 20 (LTS) pour exécuter les commandes npm
+      # Le cache npm accélère les installations futures en réutilisant
+      # les dépendances déjà téléchargées
+      - name: Set up Node.js 20
         uses: actions/setup-node@v5
         with:
-          node-version: '22' # Version LTS récente de Node.js
+          node-version: '20'
+          cache: 'npm'
 
-      # Étape 3 : Installation des dépendances
-      # "npm ci" est recommandé pour les environnements d'intégration continue (plus rapide et propre que npm install)
+      # ======================================================================
+      # Étape 3: Installation des Dépendances
+      # ======================================================================
+      # Utilise 'npm ci' (clean install) au lieu de 'npm install'
+      # Avantages:
+      #   - Plus rapide en CI/CD
+      #   - Installation déterministe basée sur package-lock.json
+      #   - Supprime node_modules existant avant installation
       - name: Install dependencies
-        run: npm ci 
+        run: npm ci
 
-      # Étape 4 : Construction du projet
-      # Compile le projet React (Vite). Si cette commande échoue, le workflow sera marqué comme échoué (Rouge).
+      # ======================================================================
+      # Étape 4: Exécution des Tests Unitaires
+      # ======================================================================
+      # Lance les tests avec Vitest en mode run (exécution unique)
+      # Si les tests échouent, le workflow s'arrête et passe à l'étape de notification
+      # Cette étape s'exécute AVANT le build pour détecter les erreurs rapidement
+      - name: Run tests
+        id: tests
+        run: npm test
+
+      # ======================================================================
+      # Étape 5: Construction du Projet (Build)
+      # ======================================================================
+      # Compile le projet React avec Vite pour vérifier qu'il n'y a pas
+      # d'erreurs de compilation. Le build est nécessaire avant le déploiement.
+      # Si cette étape échoue, le workflow sera marqué comme échoué
       - name: Build project
+        id: build
         run: npm run build
+
+      # ======================================================================
+      # Étape 6: Notification en Cas d'Échec (Feedback Automatique)
+      # ======================================================================
+      # Cette étape ne s'exécute QUE si une étape précédente a échoué
+      # Crée automatiquement une issue GitHub avec:
+      #   - Le hash du commit fautif
+      #   - L'auteur du commit
+      #   - Le message de commit
+      #   - Un lien direct vers les logs du workflow
+      #
+      # Avantages DevOps:
+      #   - Feedback immédiat aux développeurs (Time to Value réduit)
+      #   - Traçabilité complète des échecs
+      #   - Aucune configuration de secrets nécessaire (utilise GITHUB_TOKEN)
+      - name: Create issue on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Création d'une issue GitHub via l'API REST
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '❌ Échec CI - ' + context.sha.substring(0, 7),
+              body: `## Échec du workflow CI/CD
+              
+              **Branche :** \`${context.ref.replace('refs/heads/', '')}\`
+              **Commit :** ${context.sha}
+              **Auteur :** @${context.actor}
+              **Message :** ${context.payload.head_commit.message}
+              
+              ### Détails
+              Le workflow CI/CD a échoué. Vérifiez les logs pour identifier si l'échec provient des tests ou du build.
+              
+              **Logs :** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}
+              
+              ---
+              *Cette issue a été créée automatiquement par GitHub Actions*`,
+              labels: ['bug', 'ci-failure']
+            });
+            console.log('Issue créée : #' + issue.data.number);
