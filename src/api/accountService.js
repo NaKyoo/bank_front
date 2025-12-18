@@ -4,7 +4,7 @@ export const accountService = {
   getMyAccounts: async () => {
     const token = getAuthToken();
 
-    const response = await fetch(`api/users/me/accounts`, {
+    const response = await fetch(`/api/users/me/accounts`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -24,7 +24,7 @@ export const accountService = {
   closeAccount: async (accountNumber) => {
     const token = getAuthToken();
 
-    const response = await fetch(`api/accounts/${accountNumber}/close`, {
+    const response = await fetch(`/api/accounts/${accountNumber}/close`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -44,7 +44,7 @@ export const accountService = {
   archiveAccount: async (accountNumber, reason = "Clôture du compte") => {
     const token = getAuthToken();
 
-    const response = await fetch(`api/accounts/${accountNumber}/archive`, {
+    const response = await fetch(`/api/accounts/${accountNumber}/archive`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
