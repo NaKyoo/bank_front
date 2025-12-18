@@ -13,10 +13,10 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
   return (
     <div className="space-y-4">
       {accounts
-        .filter((acc) => acc.is_active)
         .map((acc) => {
           const type = acc.parent_account_number ? "Secondaire" : "Principal";
           const isOpen = openAccount === acc.account_number;
+          const isInactive = !acc.is_active;
 
           return (
             <div
@@ -25,6 +25,7 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
               style={{
                 borderColor: "var(--border)",
                 backgroundColor: "var(--surface)",
+                opacity: isInactive ? 0.6 : 1,
               }}
             >
               {/* Header de l'accordéon */}
@@ -50,6 +51,17 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
                   <span className="text-sm" style={{ color: "var(--text-muted)" }}>
                     {type}
                   </span>
+                  {isInactive && (
+                    <span
+                      className="text-xs px-2 py-1 rounded-md font-semibold"
+                      style={{
+                        backgroundColor: "var(--error)",
+                        color: "var(--text-inverse)"
+                      }}
+                    >
+                      Inactif
+                    </span>
+                  )}
                 </div>
 
                 <div className="flex items-center space-x-3">
@@ -58,9 +70,8 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
                   </span>
 
                   <svg
-                    className={`w-4 h-4 transform transition-transform duration-300 ${
-                      isOpen ? "rotate-180" : ""
-                    }`}
+                    className={`w-4 h-4 transform transition-transform duration-300 ${isOpen ? "rotate-180" : ""
+                      }`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -77,6 +88,7 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
                   {/* Supprimer un compte secondaire */}
                   {acc.parent_account_number && onDelete && (
                     <button
+                      type="button"
                       className="
                         px-2 py-1 rounded-md transition-all
                         hover:scale-105 hover:brightness-110 hover:shadow-md
@@ -110,7 +122,7 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
                           d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4"
                         />
                       </svg>
-                    </svg>
+                    </button>
                   )}
                 </div>
               </div>
@@ -126,23 +138,39 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
                   }}
                 >
                   {/* ⭐︎ Boutons actions */}
-                  <div className="flex justify-around">
-                    {["Dépôt", "Virement", "Historique"].map((label) => (
-                      <button
-                        key={label}
-                        className="
-                          px-4 py-2 rounded-md font-medium text-sm
-                          transition-all duration-300 cursor-pointer
-                          hover:scale-105 hover:brightness-110 hover:shadow-md
-                        "
-                        style={{
-                          backgroundColor: "var(--primary)",
-                          color: "var(--text-inverse)",
-                        }}
-                      >
-                        {label}
-                      </button>
-                    ))}
+                  <div className="flex flex-wrap justify-center gap-4">
+
+                    {/* ⭐︎ Bouton Dépôt */}
+                    <button
+                      className="
+                        px-5 py-3 rounded-md font-semibold text-sm md:text-base
+                        transition-all duration-300 cursor-pointer
+                        hover:scale-105 hover:brightness-110 hover:shadow-md
+                      "
+                      style={{
+                        backgroundColor: "var(--primary)",
+                        color: "var(--text-inverse)",
+                      }}
+                      onClick={() => onDeposit(acc.account_number)}
+                    >
+                      Dépôt
+                    </button>
+
+                    {/* ⭐︎ Bouton Virement */}
+                    <button
+                      className="
+                        px-5 py-3 rounded-md font-semibold text-sm md:text-base
+                        transition-all duration-300 cursor-pointer
+                        hover:scale-105 hover:brightness-110 hover:shadow-md
+                      "
+                      style={{
+                        backgroundColor: "var(--primary)",
+                        color: "var(--text-inverse)",
+                      }}
+                      onClick={() => onTransfer?.(acc.account_number)}
+                    >
+                      Virement
+                    </button>
                   </div>
 
 

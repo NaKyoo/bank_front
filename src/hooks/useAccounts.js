@@ -137,6 +137,8 @@ export const useAccounts = () => {
    * Supprime complètement un compte (fermeture + archivage)
    * Rafraîchit automatiquement la liste après suppression
    * 
+   * Note: Ne peut supprimer que les comptes actifs (is_active: true)
+   * 
    * @param {string} accountNumber - Numéro du compte à supprimer
    * @returns {Promise<boolean>} true si succès, false sinon
    */
@@ -144,12 +146,22 @@ export const useAccounts = () => {
     setActionLoading(true);
     setError(null);
     try {
+      // Vérifier si le compte est actif avant de tenter la suppression
+      const account = accounts.find(acc => acc.account_number === accountNumber);
+      if (!account) {
+        throw new Error("Compte introuvable");
+      }
+      if (!account.is_active) {
+        throw new Error("Ce compte est déjà inactif et ne peut pas être supprimé");
+      }
+
       await closeAccount(accountNumber);
       await archiveAccount(accountNumber, "Clôture manuelle");
       await fetchAccounts();
       return true;
     } catch (err) {
       setError(err.message);
+      console.error("❌ Erreur lors de la suppression:", err.message);
       return false;
     } finally {
       setActionLoading(false);
@@ -170,11 +182,18 @@ export const useAccounts = () => {
     setActionLoading(true);
     setError(null);
     try {
+      console.log("🔄 Création du compte:", { account_number, parent_account_number, initial_balance });
       const newAccount = await accountService.openAccount({ account_number, parent_account_number, initial_balance });
+      console.log("✅ Compte créé:", newAccount);
+
+      // Rafraîchir la liste des comptes
       await fetchAccounts();
+
       return newAccount;
     } catch (err) {
-      setError(err.message || "Erreur lors de l'ouverture du compte");
+      const errorMsg = err.message || "Erreur lors de l'ouverture du compte";
+      setError(errorMsg);
+      console.error("❌ Erreur lors de la création:", errorMsg);
       throw err;
     } finally {
       setActionLoading(false);
