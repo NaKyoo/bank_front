@@ -1,5 +1,6 @@
 import { useTransactions } from "../hooks/useTransactions";
 import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 
 const TransactionsList = ({ accountNumber }) => {
   const { transactions, loading, error } = useTransactions(accountNumber);
@@ -71,8 +72,8 @@ const TransactionsList = ({ accountNumber }) => {
         </thead>
 
         <tbody>
-          {transactions.map((txn, index) => (
-            <tr key={index} className="hover:opacity-80 transition">
+          {transactions.map((txn) => (
+            <tr key={txn.id} className="hover:opacity-80 transition">
               <td style={cellStyle}>
                 {new Date(txn.date).toLocaleString()}
               </td>
@@ -109,6 +110,10 @@ const TransactionsList = ({ accountNumber }) => {
       </table>
     </div>
   );
+};
+
+TransactionsList.propTypes = {
+  accountNumber: PropTypes.string.isRequired,
 };
 
 export default TransactionsList;

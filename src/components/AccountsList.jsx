@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { parseDate } from "../utils/parseDate";
 import TransactionsList from "./TransactionsList";
+import PropTypes from "prop-types";
 
 const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
   const [openAccount, setOpenAccount] = useState(null);
@@ -88,7 +89,7 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
                       }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        const confirmed = window.confirm(
+                        const confirmed = globalThis.confirm(
                           `Êtes-vous sûr de vouloir supprimer le compte ${acc.account_number} ?`
                         );
                         if (confirmed) {
@@ -155,7 +156,7 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
                         backgroundColor: "var(--primary)",
                         color: "var(--text-inverse)",
                       }}
-                      onClick={() => onTransfer && onTransfer(acc.account_number)}
+                      onClick={() => onTransfer?.(acc.account_number)}
                     >
                       Virement
                     </button>
@@ -179,6 +180,13 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
         })}
     </div>
   );
+};
+
+AccountsList.propTypes = {
+  accounts: PropTypes.array.isRequired,
+  onDelete: PropTypes.func,
+  onDeposit: PropTypes.func.isRequired,
+  onTransfer: PropTypes.func,
 };
 
 export default AccountsList;

@@ -30,7 +30,7 @@ const handleResponse = async (response) => {
     throw error;
   }
 
-  return data != null ? data : text;
+  return data == null ? text : data;
 };
 
 export const getBeneficiaries = async (ownerAccountNumber, token) => {
@@ -47,8 +47,8 @@ export const getBeneficiaries = async (ownerAccountNumber, token) => {
 export const addBeneficiary = async (
   ownerAccountNumber,
   beneficiaryAccountNumber,
-  beneficiaryName = null,
-  token
+  token,
+  beneficiaryName = null
 ) => {
   if (!ownerAccountNumber || !beneficiaryAccountNumber) {
     throw new Error("ownerAccountNumber and beneficiaryAccountNumber are required");

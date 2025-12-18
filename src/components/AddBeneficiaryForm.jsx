@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 
 const AddBeneficiaryForm = ({ addBeneficiary, onAdded, onCancel }) => {
   const [accountNumber, setAccountNumber] = useState("");
@@ -66,6 +67,12 @@ const AddBeneficiaryForm = ({ addBeneficiary, onAdded, onCancel }) => {
       {error && <div className="form-error">{error}</div>}
     </form>
   );
+};
+
+AddBeneficiaryForm.propTypes = {
+  addBeneficiary: PropTypes.func.isRequired,
+  onAdded: PropTypes.func,
+  onCancel: PropTypes.func,
 };
 
 export default AddBeneficiaryForm;

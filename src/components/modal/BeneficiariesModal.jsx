@@ -3,6 +3,7 @@ import Modal from "./Modal";
 import useBeneficiaries from "../../hooks/useBeneficiaries";
 import AddBeneficiaryForm from "../AddBeneficiaryForm";
 import "../../styles/beneficiaries.css";
+import PropTypes from "prop-types";
 
 const BeneficiariesModal = ({
   isOpen = true,
@@ -102,6 +103,16 @@ const BeneficiariesModal = ({
       </div>
     </Modal>
   );
+};
+
+BeneficiariesModal.propTypes = {
+  isOpen: PropTypes.bool,
+  onClose: PropTypes.func.isRequired,
+  ownerAccountNumber: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    .isRequired,
+  startAdding: PropTypes.bool,
+  onAdded: PropTypes.func,
+  onPick: PropTypes.func,
 };
 
 export default BeneficiariesModal;
