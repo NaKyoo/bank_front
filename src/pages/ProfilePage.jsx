@@ -7,15 +7,13 @@ import Header from "../components/Header";
 import DownloadPdf from "../components/DownloadPdf";
 
 import OpenAccountModal from "../components/modal/OpenAccountModal";
-import DepositModal from "../components/modal/DepositModal";
 import Modal from "../components/modal/Modal";
 import DepositModal from "../components/modal/DepositModal";
 import TransferModal from "../components/modal/TransferModal";
 import BeneficiariesModal from "../components/modal/BeneficiariesModal";
 
-
 const ProfilePage = () => {
-  const { logout, token } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
   const [transferOpen, setTransferOpen] = useState(false);
   const [transferSource, setTransferSource] = useState(null);
@@ -27,12 +25,15 @@ const ProfilePage = () => {
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [openModal, setOpenModal] = useState(false);
 
+  // Pour le dépôt //
+  const [showDepositModal, setShowDepositModal] = useState(false);
+  const [selectedDepositAccount, setSelectedDepositAccount] = useState(null);
+
   const {
     accounts,
     loading,
     error,
     openAccount,
-    applyTransfer,
     refresh,
     deleteAccount,
   } = useAccounts();
@@ -51,39 +52,14 @@ const ProfilePage = () => {
     setOpenModal(false);
   };
 
-  // Pour le dépôt //
-
-  const [showDepositModal, setShowDepositModal] = useState(false);
-  const [selectedDepositAccount, setSelectedDepositAccount] = useState(null);
-
-  const openDepositModal = (accNumber) => {
-    setSelectedDepositAccount(accNumber);
+  const openDepositModal = (accountNumber) => {
+    setSelectedDepositAccount(accountNumber);
     setShowDepositModal(true);
   };
 
   const closeDepositModal = () => {
     setShowDepositModal(false);
     setSelectedDepositAccount(null);
-  };
-
-  const openTransferWithRecipient = (recipientAccount, preferredSource = null) => {
-    if (!recipientAccount) return;
-    const fallbackSource =
-      preferredSource ||
-      transferSource ||
-      parentAccountNumber ||
-      accounts.find((acc) => acc.is_active)?.account_number ||
-      null;
-
-    if (!fallbackSource) {
-      console.warn("Aucun compte source disponible pour initier le virement");
-      return;
-    }
-
-    setTransferSource(fallbackSource);
-    setTransferRecipient(recipientAccount);
-    setTransferModalKey((prev) => prev + 1);
-    setTransferOpen(true);
   };
 
   const openBeneficiariesModal = (startAdding = false) => {
@@ -94,26 +70,6 @@ const ProfilePage = () => {
   const closeBeneficiariesModal = () => {
     setBeneficiariesOpen(false);
     setBeneficiariesStartAdding(false);
-  };
-
-  const handleBeneficiaryPick = (accountNumber) => {
-    if (!accountNumber) return;
-    closeBeneficiariesModal();
-    openTransferWithRecipient(accountNumber);
-  };
-
-  const handleBeneficiaryAdded = (accountNumber) => {
-    if (!accountNumber) {
-      closeBeneficiariesModal();
-      return;
-    }
-    closeBeneficiariesModal();
-    openTransferWithRecipient(accountNumber);
-  };
-
-  const handleAddBeneficiaryFromTransfer = () => {
-    setTransferOpen(false);
-    openBeneficiariesModal(true);
   };
 
   return (
@@ -234,48 +190,36 @@ const ProfilePage = () => {
           />
         </Modal>
 
-         <Modal isOpen={showDepositModal} onClose={closeDepositModal}>
-          {selectedDepositAccount && (
-            <DepositModal
-              accountNumber={selectedDepositAccount}
-              onClose={closeDepositModal}
-              refresh={refresh}
-            />
-          )}
+        {/* Modal Dépôt */}
+        <Modal isOpen={showDepositModal} onClose={closeDepositModal}>
+          <DepositModal
+            accountNumber={selectedDepositAccount}
+            onClose={closeDepositModal}
+            refresh={refresh}
+          />
         </Modal>
 
-        {beneficiariesOpen && (
-          <BeneficiariesModal
-            isOpen={beneficiariesOpen}
-            ownerAccountNumber={parentAccountNumber}
-            startAdding={beneficiariesStartAdding}
-            onClose={closeBeneficiariesModal}
-            onPick={handleBeneficiaryPick}
-            onAdded={handleBeneficiaryAdded}
-          />
-        )}
-
-        {transferOpen && (
+        {/* Modal Virement */}
+        <Modal isOpen={transferOpen} onClose={() => setTransferOpen(false)}>
           <TransferModal
-            key={`transfer-${transferModalKey}`}
-            accounts={accounts.filter((acc) => acc.is_active)}
-            defaultFrom={transferSource}
-            defaultTo={transferRecipient}
-            onAddBeneficiaryRequest={handleAddBeneficiaryFromTransfer}
-            onClose={() => {
-              setTransferOpen(false);
-              setTransferSource(null);
-              setTransferRecipient("");
-            }}
-            onSuccess={async ({ from_account, to_account, amount }) => {
-              applyTransfer({ from_account, to_account, amount });
+            key={transferModalKey}
+            sourceAccount={transferSource}
+            initialRecipient={transferRecipient}
+            onClose={() => setTransferOpen(false)}
+            onSuccess={() => {
+              refresh();
               setTransactionsRefreshKey((prev) => prev + 1);
-              await refresh();
             }}
-            token={token}
           />
-        )}
+        </Modal>
 
+        {/* Modal Bénéficiaires */}
+        <Modal isOpen={beneficiariesOpen} onClose={closeBeneficiariesModal}>
+          <BeneficiariesModal
+            onClose={closeBeneficiariesModal}
+            startAdding={beneficiariesStartAdding}
+          />
+        </Modal>
       </div>
     </div>
   );
