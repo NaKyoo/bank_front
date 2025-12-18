@@ -13,6 +13,9 @@ import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 import Spinner from "../components/Spinner";
 
+import DepositForm from "../components/DepositForm.jsx"; // modifier 
+import TransactionDetailsPage from "../pages/TransactionDetailsPage.jsx";
+
 const AppRouter = () => {
   return (
     <BrowserRouter>
@@ -76,6 +79,26 @@ const RouterContent = () => {
             </PrivateRoute>
           }
         />
+
+         {/* Page de dépôt d'argent */}
+        <Route
+          path="/deposit"
+          element={
+            <PrivateRoute> 
+              <DepositForm />
+            </PrivateRoute> 
+        }
+        /> 
+
+        {/* Page de détails de transaction */}
+        <Route
+          path="/transactions/:userAccountNumber/:transactionId"
+          element={
+            <PrivateRoute>
+              <TransactionDetailsPage/>
+            </PrivateRoute>
+          }
+          />
       </Routes>
     </>
   );

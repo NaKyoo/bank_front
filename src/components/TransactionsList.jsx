@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
 const TransactionsList = ({ accountNumber }) => {
+  const navigate = useNavigate();
   const { transactions, loading, error } = useTransactions(accountNumber);
   const navigate = useNavigate();
 
@@ -27,20 +28,6 @@ const TransactionsList = ({ accountNumber }) => {
   if (error) return <p style={{ color: "var(--error)" }}>Erreur : {error}</p>;
   if (!transactions || transactions.length === 0)
     return <p style={{ color: "var(--text-muted)" }}>Aucune transaction trouvée.</p>;
-
-  const cellStyle = {
-    borderBottom: `1px solid var(--border)`,
-    whiteSpace: "normal",
-    wordBreak: "break-word",
-    padding: "14px 16px",
-  };
-
-  const actionsCellStyle = {
-    ...cellStyle,
-    minWidth: "140px",
-    textAlign: "center",
-    whiteSpace: "nowrap",
-  };
 
   return (
     <div
@@ -72,37 +59,22 @@ const TransactionsList = ({ accountNumber }) => {
         </thead>
 
         <tbody>
-          {transactions.map((txn) => (
-            <tr key={txn.id} className="hover:opacity-80 transition">
-              <td style={cellStyle}>
+          {transactions.map((txn, index) => (
+            <tr key={index} className="hover:opacity-80 transition">
+              <td className="px-3 py-2" style={{ borderBottom: `1px solid var(--border)` }}>
                 {new Date(txn.date).toLocaleString()}
               </td>
-              <td style={cellStyle}>
+              <td className="px-3 py-2" style={{ borderBottom: `1px solid var(--border)` }}>
                 {formatType(txn.transaction_type)}
               </td>
-              <td style={cellStyle}>
+              <td className="px-3 py-2" style={{ borderBottom: `1px solid var(--border)` }}>
                 {formatAmount(txn.amount)}
               </td>
-              <td style={cellStyle}>
+              <td className="px-3 py-2" style={{ borderBottom: `1px solid var(--border)` }}>
                 {txn.source_account_number || "—"}
               </td>
-              <td style={cellStyle}>
+              <td className="px-3 py-2" style={{ borderBottom: `1px solid var(--border)` }}>
                 {txn.destination_account_number || "—"}
-              </td>
-              <td style={actionsCellStyle}>
-                  <button
-                    onClick={() => navigate(`/transactions/${accountNumber}/${txn.id}`)}
-                    className="
-                      w-full md:w-auto px-4 py-2 rounded-md font-semibold
-                      bg-[var(--primary)] text-[var(--text-inverse)]
-                      transition-all duration-300
-                      hover:scale-105 hover:brightness-110 hover:shadow-md
-                      disabled:opacity-60 disabled:cursor-not-allowed
-                    "
-                  style={{ whiteSpace: "nowrap" }}
-                  >
-                    Voir détails
-                  </button>
               </td>
             </tr>
           ))}

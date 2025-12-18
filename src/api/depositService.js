@@ -1,4 +1,6 @@
 import { getAuthToken } from "./authService";
+import { API_URL } from "./config"; 
+
 
 export const depositService = {
   depositToAccount: async (accountNumber, amount) => {
@@ -9,7 +11,7 @@ export const depositService = {
       deposit_amount: amount.toString(),
     });
 
-    const response = await fetch(`/api/deposit?${params.toString()}`, {
+    const response = await fetch(`${API_URL}/deposit?${params.toString()}`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,

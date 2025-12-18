@@ -1,10 +1,11 @@
 import { getAuthToken } from "./authService";
+import { API_URL } from "./config"; 
 
 export const accountService = {
   getMyAccounts: async () => {
     const token = getAuthToken();
 
-    const response = await fetch(`/api/users/me/accounts`, {
+    const response = await fetch(`${API_URL}/users/me/accounts`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
