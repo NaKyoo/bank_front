@@ -88,6 +88,7 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
                   {/* Supprimer un compte secondaire */}
                   {acc.parent_account_number && onDelete && (
                     <button
+                      type="button"
                       className="
                         px-2 py-1 rounded-md transition-all
                         hover:scale-105 hover:brightness-110 hover:shadow-md
@@ -121,7 +122,7 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
                           d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4"
                         />
                       </svg>
-                    </svg>
+                    </button>
                   )}
                 </div>
               </div>
@@ -137,7 +138,6 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
                   }}
                 >
                   {/* ⭐︎ Boutons actions */}
-<<<<<<< HEAD
                   <div className="flex flex-wrap justify-center gap-4">
 
                     {/* ⭐︎ Bouton Dépôt */}
@@ -171,25 +171,6 @@ const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
                     >
                       Virement
                     </button>
-=======
-                  <div className="flex justify-around">
-                    {["Dépôt", "Virement", "Historique"].map((label) => (
-                      <button
-                        key={label}
-                        className="
-                          px-4 py-2 rounded-md font-medium text-sm
-                          transition-all duration-300 cursor-pointer
-                          hover:scale-105 hover:brightness-110 hover:shadow-md
-                        "
-                        style={{
-                          backgroundColor: "var(--primary)",
-                          color: "var(--text-inverse)",
-                        }}
-                      >
-                        {label}
-                      </button>
-                    ))}
->>>>>>> d0640b0ab66a47849d5345b49fc85d0df0934bc4
                   </div>
 
 
