@@ -134,7 +134,6 @@ const ProfilePage = () => {
                 setTransferModalKey((prev) => prev + 1);
                 setTransferOpen(true);
               }}
-              onDeposit={openDepositModal} // pour le deposit dans profilPage
             />
           )}
 
