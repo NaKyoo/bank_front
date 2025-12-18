@@ -45,7 +45,6 @@ const DetailsModal = ({ account}) => {
 
 DetailsModal.propTypes = {
   account: PropTypes.object,
-  onClose: PropTypes.func.isRequired,
 };
 
 export default DetailsModal;

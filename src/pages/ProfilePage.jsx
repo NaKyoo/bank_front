@@ -7,22 +7,15 @@ import Header from "../components/Header";
 import DownloadPdf from "../components/DownloadPdf";
 
 import OpenAccountModal from "../components/modal/OpenAccountModal";
-import DepositModal from "../components/modal/DepositModal";
 import Modal from "../components/modal/Modal";
-import DepositModal from "../components/modal/DepositModal";
-import TransferModal from "../components/modal/TransferModal";
-import BeneficiariesModal from "../components/modal/BeneficiariesModal";
-
 
 const ProfilePage = () => {
-  const { logout, token } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
-  const [transferOpen, setTransferOpen] = useState(false);
-  const [transferSource, setTransferSource] = useState(null);
-  const [transferRecipient, setTransferRecipient] = useState("");
-  const [transferModalKey, setTransferModalKey] = useState(0);
-  const [beneficiariesOpen, setBeneficiariesOpen] = useState(false);
-  const [beneficiariesStartAdding, setBeneficiariesStartAdding] = useState(false);
+  const [setTransferOpen] = useState(false);
+  const [setTransferSource] = useState(null);
+  const [setTransferRecipient] = useState("");
+  const [setTransferModalKey] = useState(0);
   const [transactionsRefreshKey, setTransactionsRefreshKey] = useState(0);
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [openModal, setOpenModal] = useState(false);
@@ -32,7 +25,6 @@ const ProfilePage = () => {
     loading,
     error,
     openAccount,
-    applyTransfer,
     refresh,
     deleteAccount,
   } = useAccounts();
