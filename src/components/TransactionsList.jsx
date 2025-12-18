@@ -5,7 +5,6 @@ import PropTypes from "prop-types";
 const TransactionsList = ({ accountNumber }) => {
   const navigate = useNavigate();
   const { transactions, loading, error } = useTransactions(accountNumber);
-  const navigate = useNavigate();
 
 
   const formatType = (type) => {

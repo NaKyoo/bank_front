@@ -8,13 +8,11 @@ import LoginPage from "../pages/LoginPage";
 import ProfilePage from "../pages/ProfilePage";
 import TransactionDetailsPage from "../pages/TransactionDetailsPage.jsx";
 
-
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 import Spinner from "../components/Spinner";
 
-import DepositForm from "../components/DepositForm.jsx"; // modifier 
-import TransactionDetailsPage from "../pages/TransactionDetailsPage.jsx";
+import DepositForm from "../components/DepositForm.jsx";
 
 const AppRouter = () => {
   return (
@@ -71,34 +69,26 @@ const RouterContent = () => {
             </PrivateRoute>
           }
         />
-        <Route
-          path="/transactions/:userAccountNumber/:transactionId"
-          element={
-            <PrivateRoute>
-              <TransactionDetailsPage/>
-            </PrivateRoute>
-          }
-        />
 
-         {/* Page de dépôt d'argent */}
+        {/* Page de dépôt d'argent */}
         <Route
           path="/deposit"
           element={
-            <PrivateRoute> 
+            <PrivateRoute>
               <DepositForm />
-            </PrivateRoute> 
-        }
-        /> 
+            </PrivateRoute>
+          }
+        />
 
         {/* Page de détails de transaction */}
         <Route
           path="/transactions/:userAccountNumber/:transactionId"
           element={
             <PrivateRoute>
-              <TransactionDetailsPage/>
+              <TransactionDetailsPage />
             </PrivateRoute>
           }
-          />
+        />
       </Routes>
     </>
   );

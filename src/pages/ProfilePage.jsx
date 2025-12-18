@@ -9,7 +9,6 @@ import DownloadPdf from "../components/DownloadPdf";
 import OpenAccountModal from "../components/modal/OpenAccountModal";
 import DepositModal from "../components/modal/DepositModal";
 import Modal from "../components/modal/Modal";
-import DepositModal from "../components/modal/DepositModal";
 import TransferModal from "../components/modal/TransferModal";
 import BeneficiariesModal from "../components/modal/BeneficiariesModal";
 
