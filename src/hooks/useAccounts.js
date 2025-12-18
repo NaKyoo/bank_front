@@ -1,18 +1,83 @@
+// ============================================================================
+// Hook Custom - Gestion des Comptes Bancaires
+// ============================================================================
+// 
+// Description:
+//   Hook React personnalisé pour gérer l'état et les opérations sur les
+//   comptes bancaires de l'utilisateur connecté. Gère la récupération,
+//   la création, la suppression et les transferts entre comptes.
+//
+// Fonctionnalités:
+//   - Récupération automatique des comptes au montage du composant
+//   - Déduplication automatique des comptes (protection contre les doublons backend)
+//   - Gestion des opérations CRUD (Create, Read, Update, Delete)
+//   - Mise à jour optimiste du solde lors des virements
+//   - Gestion des états de chargement et d'erreur
+//
+// Utilisation:
+//   const { accounts, loading, error, openAccount, deleteAccount, ... } = useAccounts();
+//
+// ============================================================================
+
 import { useState, useEffect } from "react";
 import { accountService } from "../api/accountService";
 
+/**
+ * Hook personnalisé pour gérer les comptes bancaires de l'utilisateur
+ * 
+ * @returns {Object} Objet contenant:
+ *   - accounts: Array - Liste des comptes uniques de l'utilisateur
+ *   - loading: Boolean - État de chargement initial
+ *   - error: String|null - Message d'erreur éventuel
+ *   - actionLoading: Boolean - État de chargement des actions (create/delete)
+ *   - closeAccount: Function - Ferme un compte (change is_active à false)
+ *   - archiveAccount: Function - Archive un compte
+ *   - deleteAccount: Function - Supprime un compte (close + archive)
+ *   - openAccount: Function - Ouvre un nouveau compte
+ *   - applyTransfer: Function - Met à jour les soldes après un virement
+ *   - refresh: Function - Rafraîchit la liste des comptes
+ */
 export const useAccounts = () => {
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  /**
+   * Récupère les comptes depuis l'API backend
+   * Applique un filtre de déduplication pour éviter les doublons
+   * 
+   * Note: Le backend peut renvoyer des comptes en double (même account_number).
+   * Ce filtre garantit que seul le premier compte de chaque account_number
+   * est conservé, protégeant ainsi l'interface contre les erreurs de clé React.
+   */
   const fetchAccounts = async () => {
     setLoading(true);
     setError(null);
     try {
       let data = await accountService.getMyAccounts();
-      setAccounts(data);
+
+      // 🔍 DEBUG: Logs pour vérifier les données reçues du backend
+      console.log("📊 Comptes reçus du backend:", data);
+      console.log("📊 Nombre de comptes:", data.length);
+      console.log("📊 Account numbers:", data.map(acc => acc.account_number));
+
+      // 🛡️ PROTECTION: Filtrage des doublons basé sur account_number
+      // Utilise reduce() pour construire un tableau sans doublons
+      // en vérifiant si chaque account_number existe déjà
+      const uniqueAccounts = data.reduce((acc, current) => {
+        const exists = acc.find(item => item.account_number === current.account_number);
+        if (!exists) {
+          return acc.concat([current]);
+        }
+        // Log un warning si un doublon est détecté
+        console.warn(`⚠️ Doublon détecté et ignoré: ${current.account_number}`);
+        return acc;
+      }, []);
+
+      console.log("✅ Comptes uniques après filtrage:", uniqueAccounts.length);
+
+      setAccounts(uniqueAccounts);
     } catch (err) {
       setError(err.message || "Erreur lors de la récupération des comptes");
     } finally {
@@ -20,10 +85,20 @@ export const useAccounts = () => {
     }
   };
 
+  /**
+   * Effet de montage: Récupère les comptes au chargement du composant
+   */
   useEffect(() => {
     fetchAccounts();
   }, []);
 
+  /**
+   * Ferme un compte bancaire (met is_active à false)
+   * 
+   * @param {string} accountNumber - Numéro du compte à fermer
+   * @returns {Promise<Object>} Données du compte fermé
+   * @throws {Error} Si la fermeture échoue
+   */
   const closeAccount = async (accountNumber) => {
     setActionLoading(true);
     setError(null);
@@ -37,6 +112,14 @@ export const useAccounts = () => {
     }
   };
 
+  /**
+   * Archive un compte bancaire
+   * 
+   * @param {string} accountNumber - Numéro du compte à archiver
+   * @param {string} reason - Raison de l'archivage (optionnel)
+   * @returns {Promise<Object>} Données du compte archivé
+   * @throws {Error} Si l'archivage échoue
+   */
   const archiveAccount = async (accountNumber, reason = "Clôture du compte") => {
     setActionLoading(true);
     setError(null);
@@ -50,6 +133,13 @@ export const useAccounts = () => {
     }
   };
 
+  /**
+   * Supprime complètement un compte (fermeture + archivage)
+   * Rafraîchit automatiquement la liste après suppression
+   * 
+   * @param {string} accountNumber - Numéro du compte à supprimer
+   * @returns {Promise<boolean>} true si succès, false sinon
+   */
   const deleteAccount = async (accountNumber) => {
     setActionLoading(true);
     setError(null);
@@ -66,6 +156,16 @@ export const useAccounts = () => {
     }
   };
 
+  /**
+   * Ouvre un nouveau compte bancaire
+   * Rafraîchit automatiquement la liste après création
+   * 
+   * @param {string} account_number - Numéro du nouveau compte
+   * @param {string} parent_account_number - Numéro du compte parent (pour comptes secondaires)
+   * @param {number} initial_balance - Solde initial (défaut: 0)
+   * @returns {Promise<Object>} Données du compte créé
+   * @throws {Error} Si la création échoue
+   */
   const openAccount = async (account_number, parent_account_number, initial_balance = 0) => {
     setActionLoading(true);
     setError(null);
@@ -81,6 +181,40 @@ export const useAccounts = () => {
     }
   };
 
+  /**
+   * Applique un virement entre comptes (mise à jour optimiste)
+   * Met à jour les soldes localement sans attendre la confirmation backend
+   * 
+   * Cette approche optimiste améliore l'UX en affichant immédiatement
+   * les nouveaux soldes, sans attendre la réponse du serveur.
+   * 
+   * @param {Object} transferData - Données du virement
+   * @param {string} transferData.from_account - Compte source
+   * @param {string} transferData.to_account - Compte destination
+   * @param {number} transferData.amount - Montant du virement
+   */
+  const applyTransfer = ({ from_account, to_account, amount }) => {
+    const value = Number(amount);
+    if (Number.isNaN(value) || value === 0) return;
+
+    setAccounts((prev) =>
+      prev.map((acc) => {
+        // Débiter le compte source
+        if (acc.account_number === from_account) {
+          const current = Number(acc.balance) || 0;
+          return { ...acc, balance: current - value };
+        }
+        // Créditer le compte destination
+        if (acc.account_number === to_account) {
+          const current = Number(acc.balance) || 0;
+          return { ...acc, balance: current + value };
+        }
+        return acc;
+      })
+    );
+  };
+
+  // Retour de l'interface publique du hook
   return {
     accounts,
     loading,
@@ -90,6 +224,7 @@ export const useAccounts = () => {
     archiveAccount,
     deleteAccount,
     openAccount,
+    applyTransfer,
     refresh: fetchAccounts,
   };
 };

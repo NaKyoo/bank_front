@@ -23,7 +23,7 @@ const LoginPage = () => {
       };
 
       login({ user, token: data.access_token });
-      navigate("/dashboard");
+      navigate("/profile");
     } catch (err) {
       setApiError(handleApiError(err));
     }

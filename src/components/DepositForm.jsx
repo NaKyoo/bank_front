@@ -9,9 +9,9 @@ const DepositForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const numAmount = parseFloat(amount);
+    const numAmount = Number.parseFloat(amount);
 
-    if (isNaN(numAmount) || numAmount <= 0) {
+    if (Number.isNaN(numAmount) || numAmount <= 0) {
       alert("Montant invalide.");
       return;
     }

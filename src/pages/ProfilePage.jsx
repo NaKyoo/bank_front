@@ -4,21 +4,26 @@ import { useNavigate } from "react-router-dom";
 import { useAccounts } from "../hooks/useAccounts";
 import AccountsList from "../components/AccountsList";
 import Header from "../components/Header";
+import DownloadPdf from "../components/DownloadPdf";
 
 import OpenAccountModal from "../components/modal/OpenAccountModal";
 import DepositModal from "../components/modal/DepositModal";
 import Modal from "../components/modal/Modal";
+import DepositModal from "../components/modal/DepositModal";
+import TransferModal from "../components/modal/TransferModal";
+import BeneficiariesModal from "../components/modal/BeneficiariesModal";
 
-
-
-
-
-
-// Page Profil utilisateur //
 
 const ProfilePage = () => {
-  const { logout } = useAuth();
+  const { logout, token } = useAuth();
   const navigate = useNavigate();
+  const [transferOpen, setTransferOpen] = useState(false);
+  const [transferSource, setTransferSource] = useState(null);
+  const [transferRecipient, setTransferRecipient] = useState("");
+  const [transferModalKey, setTransferModalKey] = useState(0);
+  const [beneficiariesOpen, setBeneficiariesOpen] = useState(false);
+  const [beneficiariesStartAdding, setBeneficiariesStartAdding] = useState(false);
+  const [transactionsRefreshKey, setTransactionsRefreshKey] = useState(0);
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [openModal, setOpenModal] = useState(false);
 
@@ -27,6 +32,7 @@ const ProfilePage = () => {
     loading,
     error,
     openAccount,
+    applyTransfer,
     refresh,
     deleteAccount,
   } = useAccounts();
@@ -45,28 +51,13 @@ const ProfilePage = () => {
     setOpenModal(false);
   };
 
-  // Pour le dépôt //
-
-  const [showDepositModal, setShowDepositModal] = useState(false);
-  const [selectedDepositAccount, setSelectedDepositAccount] = useState(null);
-
-  const openDepositModal = (accNumber) => {
-    setSelectedDepositAccount(accNumber);
-    setShowDepositModal(true);
-  };
-
-  const closeDepositModal = () => {
-    setShowDepositModal(false);
-    setSelectedDepositAccount(null);
-  };
-
   return (
     <div className="min-h-screen bg-background text-text">
       <Header pageTitle="Profil" onLogout={logout} />
 
       <div className="flex items-center justify-center p-6">
         <div
-          className="w-full max-w-3xl p-8 rounded-lg shadow-lg transition-all"
+          className="w-full max-w-5xl p-10 rounded-2xl shadow-lg transition-all"
           style={{
             backgroundColor: "var(--surface)",
             boxShadow: "var(--shadow)",
@@ -82,23 +73,46 @@ const ProfilePage = () => {
               Mes comptes
             </h2>
 
-            {/* BTN Ouvrir un compte */}
-            <button
-              onClick={() => setOpenModal(true)}
-              className="
-                px-4 py-2 rounded-md font-semibold
-                transition-all duration-300
-                hover:scale-105 hover:brightness-110 hover:shadow-md
-              "
-              style={{
-                backgroundColor: "var(--primary)",
-                color: "var(--text-inverse)",
-                cursor: "pointer",
-              }}
-            >
-              Ouvrir un compte
-            </button>
+            <div className="flex gap-2">
+              {/* Bouton Télécharger le relevé */}
+              <DownloadPdf />
+
+              {/* Bouton Bénéficiaires */}
+              <button
+                onClick={() => openBeneficiariesModal(false)}
+                className="
+                  px-4 py-2 rounded-md font-semibold
+                  transition-all duration-300
+                  hover:scale-105 hover:brightness-110 hover:shadow-md
+                "
+                style={{
+                  backgroundColor: "var(--primary)",
+                  color: "var(--text-inverse)",
+                  cursor: "pointer",
+                }}
+              >
+                Bénéficiaires
+              </button>
+
+              {/* BTN Ouvrir un compte */}
+              <button
+                onClick={() => setOpenModal(true)}
+                className="
+                  px-4 py-2 rounded-md font-semibold
+                  transition-all duration-300
+                  hover:scale-105 hover:brightness-110 hover:shadow-md
+                "
+                style={{
+                  backgroundColor: "var(--primary)",
+                  color: "var(--text-inverse)",
+                  cursor: "pointer",
+                }}
+              >
+                Ouvrir un compte
+              </button>
+            </div>
           </div>
+
 
           {/* Accounts */}
           {loading && <p style={{ color: "var(--text)" }}>Chargement...</p>}
@@ -107,10 +121,18 @@ const ProfilePage = () => {
           {!loading && !error && accounts.length > 0 && (
             <AccountsList
               accounts={accounts}
-              onViewDetails={setSelectedAccount}
+              refreshKey={transactionsRefreshKey}
               onDelete={async (accNum) => {
                 await deleteAccount(accNum);
                 await refresh();
+                setTransactionsRefreshKey((prev) => prev + 1);
+              }}
+              onDeposit={openDepositModal} // pour le deposit dans profilPage
+              onTransfer={(accNum) => {
+                setTransferSource(accNum);
+                setTransferRecipient("");
+                setTransferModalKey((prev) => prev + 1);
+                setTransferOpen(true);
               }}
               onDeposit={openDepositModal} // pour le deposit dans profilPage
             />
@@ -146,17 +168,6 @@ const ProfilePage = () => {
             openAccount={openAccount}
             refresh={refresh}
           />
-        </Modal>
-
-        {/* Modal Dépôt */}
-        <Modal isOpen={showDepositModal} onClose={closeDepositModal}>
-          {selectedDepositAccount && (
-            <DepositModal
-              accountNumber={selectedDepositAccount}
-              onClose={closeDepositModal}
-              refresh={refresh}
-            />
-          )}
         </Modal>
       </div>
     </div>

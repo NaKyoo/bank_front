@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { parseDate } from "../utils/parseDate";
 import TransactionsList from "./TransactionsList";
+import PropTypes from "prop-types";
 
-const AccountsList = ({ accounts, onViewDetails, onDelete, onDeposit }) => {
+const AccountsList = ({ accounts, onDelete, onDeposit, onTransfer }) => {
   const [openAccount, setOpenAccount] = useState(null);
 
   const toggleAccount = (accountNumber) => {
@@ -27,10 +28,18 @@ const AccountsList = ({ accounts, onViewDetails, onDelete, onDeposit }) => {
               }}
             >
               {/* Header de l'accordéon */}
-              <button
+              <div
+                role="button"
+                tabIndex={0}
                 onClick={() => toggleAccount(acc.account_number)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    toggleAccount(acc.account_number);
+                  }
+                }}
                 className="
-                  w-full flex justify-between items-center p-4
+                  w-full flex justify-between items-center p-5
                   transition-all duration-300 cursor-pointer
                   hover:bg-opacity-50 hover:brightness-105
                 "
@@ -67,7 +76,7 @@ const AccountsList = ({ accounts, onViewDetails, onDelete, onDeposit }) => {
 
                   {/* Supprimer un compte secondaire */}
                   {acc.parent_account_number && onDelete && (
-                    <svg
+                    <button
                       className="
                         px-2 py-1 rounded-md transition-all
                         hover:scale-105 hover:brightness-110 hover:shadow-md
@@ -79,7 +88,7 @@ const AccountsList = ({ accounts, onViewDetails, onDelete, onDeposit }) => {
                       }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        const confirmed = window.confirm(
+                        const confirmed = globalThis.confirm(
                           `Êtes-vous sûr de vouloir supprimer le compte ${acc.account_number} ?`
                         );
                         if (confirmed) {
@@ -104,12 +113,12 @@ const AccountsList = ({ accounts, onViewDetails, onDelete, onDeposit }) => {
                     </svg>
                   )}
                 </div>
-              </button>
+              </div>
 
               {/* Contenu de l'accordéon */}
               {isOpen && (
                 <div
-                  className="p-4 border-t space-y-4 transition-all duration-300"
+                  className="p-5 border-t space-y-5 transition-all duration-300"
                   style={{
                     borderColor: "var(--border)",
                     backgroundColor: "var(--surface-light)",
@@ -130,15 +139,12 @@ const AccountsList = ({ accounts, onViewDetails, onDelete, onDeposit }) => {
                           backgroundColor: "var(--primary)",
                           color: "var(--text-inverse)",
                         }}
-                        onClick={() => {
-                          if (label === "Dépôt") 
-                              onDeposit(acc.account_number);
-                          }}
                       >
                         {label}
                       </button>
                     ))}
                   </div>
+
 
                   {/* Infos création */}
                   <div className="flex justify-between items-center">
@@ -157,6 +163,13 @@ const AccountsList = ({ accounts, onViewDetails, onDelete, onDeposit }) => {
         })}
     </div>
   );
+};
+
+AccountsList.propTypes = {
+  accounts: PropTypes.array.isRequired,
+  onDelete: PropTypes.func,
+  onDeposit: PropTypes.func.isRequired,
+  onTransfer: PropTypes.func,
 };
 
 export default AccountsList;

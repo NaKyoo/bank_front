@@ -5,8 +5,9 @@ import { AuthProvider } from "../context/AuthContext";
 
 import SignupPage from "../pages/SignupPage";
 import LoginPage from "../pages/LoginPage";
-import Dashboard from "../pages/DashBoardPage";
 import ProfilePage from "../pages/ProfilePage";
+import TransactionDetailsPage from "../pages/TransactionDetailsPage.jsx";
+
 
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
@@ -63,18 +64,18 @@ const RouterContent = () => {
 
         {/* Pages privées */}
         <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute>
-              <Dashboard />
-            </PrivateRoute>
-          }
-        />
-        <Route
           path="/profile"
           element={
             <PrivateRoute>
               <ProfilePage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/transactions/:userAccountNumber/:transactionId"
+          element={
+            <PrivateRoute>
+              <TransactionDetailsPage/>
             </PrivateRoute>
           }
         />
