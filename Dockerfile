@@ -19,7 +19,10 @@ RUN npm run build
 # Doc Stage
 
 FROM build-stage AS doc-stage
-
+# on installe jsdoc globalement
+RUN npm install -g jsdoc
+# on génère la documentation dans le dossier /rendered-docs
+RUN npm run docs
 # Production stage
 # création de l'image finale légère avec Nginx pour servir les fichiers static
 FROM nginx:stable-alpine

@@ -1,27 +1,31 @@
-name: Continuous Documentation (MCO)
+name: Generate and Deploy Documentation
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main 
+
+permissions:
+  contents: write
 
 jobs:
-  generate-and-deploy-doc:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout du code
         uses: actions/checkout@v4
 
-      - name: Build Doc Stage
+      - name: Build Docker Doc Stage
         run: |
-          # On build uniquement jusqu'à l'étape 'doc-stage' définie dans le Dockerfile
-          docker build --target doc-stage -t my-app-doc .
-          # On crée un conteneur temporaire pour extraire les fichiers
-          docker create --name temp-doc my-app-doc
-          docker cp temp-doc:/app/docs/out ./rendered-docs
-          docker rm temp-doc
+          # Construction de l'image jusqu'à l'étape de doc
+          docker build --target doc-stage -t doc-generator .
+          # Extraction des fichiers comme vous l'avez fait en local
+          docker create --name extract doc-generator
+          docker cp extract:/app/docs/out ./public
+          docker rm extract
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./rendered-docs
+          publish_dir: ./public
