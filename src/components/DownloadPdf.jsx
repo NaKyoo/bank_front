@@ -1,4 +1,3 @@
-import { jsPDF } from "jspdf";
 import { useAllTransactions } from "../hooks/useAllTransactions";
 
 const DownloadPdf = () => {
