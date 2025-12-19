@@ -110,7 +110,11 @@ jobs:
       # Cela permet de suivre l'évolution des dépendances au fil du temps
       - name: Commit SBOM to repository
         run: |
-          git add sbom-cyclonedx.json
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          mkdir -p .sbom
+          mv sbom-cyclonedx.json .sbom/
+          git add .sbom/
           git diff --quiet && git diff --staged --quiet || git commit -m "chore: update SBOM [skip ci]"
           git push
 
