@@ -16,6 +16,10 @@ COPY . .
 # on compile le projet --> crée le dossier /dist dans lequel on transforme le code react en fichier static optimisé
 RUN npm run build
 
+# Doc Stage
+
+FROM build-stage AS doc-stage
+
 # Production stage
 # création de l'image finale légère avec Nginx pour servir les fichiers static
 FROM nginx:stable-alpine
