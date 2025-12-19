@@ -43,13 +43,13 @@ jobs:
       # ======================================================================
       # Étape 2: Configuration de l'Environnement Node.js
       # ======================================================================
-      # Installe Node.js version 20 (LTS) pour exécuter les commandes npm
+      # Installe Node.js version 22 (LTS) pour exécuter les commandes npm
       # Le cache npm accélère les installations futures en réutilisant
       # les dépendances déjà téléchargées
-      - name: Set up Node.js 20
+      - name: Set up Node.js 22
         uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       # ======================================================================
@@ -106,7 +106,7 @@ jobs:
             const issue = await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: '❌ Échec CI - ' + context.sha.substring(0, 7),
+              title: 'Échec CI - ' + context.sha.substring(0, 7),
               body: `## Échec du workflow CI/CD
               
               **Branche :** \`${context.ref.replace('refs/heads/', '')}\`
