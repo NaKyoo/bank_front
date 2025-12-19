@@ -87,7 +87,35 @@ jobs:
         run: npm run build
 
       # ======================================================================
-      # Étape 6: Notification en Cas d'Échec (Feedback Automatique)
+      # Étape 6: Génération et Sauvegarde du SBOM (CycloneDX)
+      # ======================================================================
+      - name: Generate SBOM (CycloneDX)
+        uses: anchore/sbom-action@v0
+        with:
+          path: ./
+          format: cyclonedx-json
+          output-file: sbom-cyclonedx.json
+
+      - name: Upload SBOM Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-files
+          path: sbom-cyclonedx.json
+          retention-days: 90
+
+      # ======================================================================
+      # Étape 8: Commit du SBOM dans le Repository (Optionnel)
+      # ======================================================================
+      # Sauvegarde le SBOM directement dans le dépôt pour versioning
+      # Cela permet de suivre l'évolution des dépendances au fil du temps
+      - name: Commit SBOM to repository
+        run: |
+          git add sbom-cyclonedx.json
+          git diff --quiet && git diff --staged --quiet || git commit -m "chore: update SBOM [skip ci]"
+          git push
+
+      # ======================================================================
+      # Étape 9: Notification en Cas d'Échec (Feedback Automatique)
       # ======================================================================
       # Cette étape ne s'exécute QUE si une étape précédente a échoué
       # Crée automatiquement une issue GitHub avec:
