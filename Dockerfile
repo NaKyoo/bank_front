@@ -1,23 +1,44 @@
-# Build stage#
-# compilation d'une image légère contenant Node.js 18 pour compiler le projet
-FROM node:22-alpine
+# ==========================================
+# Stage 1: Build & Setup
+# ==========================================
+FROM node:22-alpine AS build-stage
 
-# on se place dans le dossier /app à l'interieur de la machine Docker
 WORKDIR /app
 
-# on copie les fichier de dépendance 
+# Copie des dépendances
 COPY package*.json ./
 
-# on installe les bibliothèques nécessaires
-RUN npm install
+# Installation propre (npm ci respecte le lockfile)
+RUN npm ci
 
-# on copie le reste du code dans la machine
+# Copie du code source
 COPY . .
 
-# Doc Stage
+# On lance un build pour vérifier qu'il n'y a pas d'erreurs de syntaxe
+RUN npm run build
 
-# on indique que le conteneur écoute sur le port standard du web : 80
+# ==========================================
+# Stage 2: Doc Stage
+# ==========================================
+FROM build-stage AS doc-stage
+WORKDIR /app
+
+# Création du dossier pour l'artefact de doc
+RUN mkdir -p /app/docs/out
+
+# On copie le résultat du build dans le dossier de sortie de doc
+# (Ou remplacez par votre commande de génération de doc si vous en avez une)
+RUN cp -r dist/* /app/docs/out/
+
+# ==========================================
+# Stage 3: Final Stage (Lancement Dev)
+# ==========================================
+# On reste sur l'image build-stage qui contient déjà node_modules
+FROM build-stage AS final
+
+# Port standard de Vite
 EXPOSE 5173
 
-# on lance Nginx en mode foreground
-CMD ["npm", "run", "dev"]
+# Lancement en mode DEV
+# IMPORTANT : "-- --host" permet d'écouter sur 0.0.0.0 (extérieur du conteneur)
+CMD ["npm", "run", "dev", "--", "--host"]
