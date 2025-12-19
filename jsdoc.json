@@ -6,6 +6,7 @@
     },
     "opts": {
         "destination": "./docs/out",
-        "recurse": true
+        "recurse": true,
+        "readme": "README.md"
     }
 }

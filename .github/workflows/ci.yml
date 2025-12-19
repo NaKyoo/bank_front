@@ -22,6 +22,9 @@ name: CI Frontend - Build & Tests
 # quelle branche pour garantir la qualité du code en continu
 on: [push]
 
+permissions:
+  contents: write
+  issues: write
 # ----------------------------------------------------------------------------
 # Définition des Jobs
 # ----------------------------------------------------------------------------
@@ -132,6 +135,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
+      - name: Generate and Extract Documentation
+        run: |
+          # Construction de l'image jusqu'à l'étape doc-stage
+          docker build --target doc-stage -t doc-gen-image .
+          # Extraction du dossier de doc vers l'hôte
+          docker create --name extractor doc-gen-image
+          docker cp extractor:/app/docs/out ./delivery-docs
+          docker rm extractor
+
+      - name: Upload Documentation Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-code-documentation
+          path: ./delivery-docs/
+          retention-days: 30
+          
       - name: Deploy Docs to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
