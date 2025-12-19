@@ -18,6 +18,7 @@ RUN npm run build
 
 # Doc Stage
 
+# génération de la documentation
 FROM build-stage AS doc-stage
 # on installe jsdoc globalement
 RUN npm install -g jsdoc
